@@ -3,7 +3,7 @@ package com.daniyal.bookstore.exceptions;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Collections;;
+import java.util.Collections;
 import java.util.Map;
 @Getter
 
