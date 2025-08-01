@@ -1,5 +1,7 @@
 package com.daniyal.bookstore.controller;
 
+import com.daniyal.bookstore.dto.LoginRequestDTO;
+import com.daniyal.bookstore.dto.LoginResponseDTO;
 import com.daniyal.bookstore.dto.UserRequestDTO;
 import com.daniyal.bookstore.dto.UserResponseDTO;
 import com.daniyal.bookstore.entity.User;
@@ -20,6 +22,16 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> loginUser(@Valid @RequestBody LoginRequestDTO loginRequest)
+    {
+        String token=userService.login(loginRequest);
+
+        LoginResponseDTO loginResponse=new LoginResponseDTO("Login Successful",token);
+        return new ResponseEntity<>(loginResponse,HttpStatus.OK);
+    }
+
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRequestDTO userRequest)
@@ -60,5 +72,4 @@ public class UserController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
 }
