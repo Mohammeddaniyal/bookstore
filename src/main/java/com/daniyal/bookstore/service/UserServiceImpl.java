@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class UserServiceImpl implements UserService{
@@ -22,19 +19,19 @@ public class UserServiceImpl implements UserService{
     @Override
     public User registerUser(User user) {
 
-     List<String> errorMessages=new ArrayList<>();
+     Map<String,String> errorMap =new HashMap<>();
         Optional<User> userOptional=userRepository.findByEmail(user.getEmail());
         if(userOptional.isPresent())
         {
-            errorMessages.add("Email already exists");
+            errorMap.put("email","Email already exists");
         }
         if(userRepository.findByUsername(user.getUsername()).isPresent())
         {
-            errorMessages.add("User already exists");
+            errorMap.put("user","User already exists");
         }
-        if(!errorMessages.isEmpty())
+        if(!errorMap.isEmpty())
         {
-            throw new UserAlreadyExistsException(errorMessages);
+            throw new UserAlreadyExistsException(errorMap);
         }
         user.setRoles(Arrays.asList("CUSTOMER"));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
