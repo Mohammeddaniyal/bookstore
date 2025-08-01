@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Map;
 
 @Setter
 @Getter
@@ -13,5 +13,5 @@ import java.util.List;
 public class ApiErrorResponse {
     private String message;
     private String errorCode;
-    private List<String> errors;
+    private Map<String,String> errors;
 }
