@@ -16,7 +16,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String,String>> handleValidationExceptions(MethodArgumentNotValidException validException)
+    public ResponseEntity<ApiErrorResponse> handleValidationExceptions(MethodArgumentNotValidException validException)
     {
         Map<String,String> errors=new HashMap<>();
 
@@ -25,7 +25,13 @@ public class GlobalExceptionHandler {
             String message=error.getDefaultMessage();
             errors.put(fieldName,message);
         });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
+        ApiErrorResponse apiErrorResponse=new ApiErrorResponse();
+        apiErrorResponse.setMessage("Validation failed for one or more fields");
+        apiErrorResponse.setErrorCode("VALIDATION_ERROR");
+        apiErrorResponse.setErrors(errors);
+
+        return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ApiErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException exception)
@@ -33,7 +39,7 @@ public class GlobalExceptionHandler {
         ApiErrorResponse apiErrorResponse=new ApiErrorResponse();
         apiErrorResponse.setMessage("User registration failed due to duplicate entries");
         apiErrorResponse.setErrorCode("USER_ALREADY_EXISTS");
-        apiErrorResponse.setErrors(exception.getErrorMessages());
+        apiErrorResponse.setErrors(exception.getErrorMap());
         return new ResponseEntity<>(apiErrorResponse,HttpStatus.BAD_REQUEST);
     }
 }
