@@ -6,6 +6,7 @@ import com.daniyal.bookstore.exceptions.InvalidCredentialsException;
 import com.daniyal.bookstore.exceptions.UserAlreadyExistsException;
 import com.daniyal.bookstore.exceptions.UserNotExistsException;
 import com.daniyal.bookstore.repository.UserRepository;
+import com.daniyal.bookstore.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -71,7 +72,7 @@ public class UserServiceImpl implements UserService{
             {
                 throw new InvalidCredentialsException("Invalid password");
             }
-            return jwtUtil.generateToken(userDb.getUsername(),userDb.getRoles());
+            return jwtUtil.generateToken(userDb.getEmail(),userDb.getRoles());
         }
         throw new InvalidCredentialsException("Invalid email");
     }
