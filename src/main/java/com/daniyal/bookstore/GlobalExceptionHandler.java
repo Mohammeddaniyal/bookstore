@@ -1,6 +1,8 @@
 package com.daniyal.bookstore;
 
 import com.daniyal.bookstore.exceptions.ApiErrorResponse;
+import com.daniyal.bookstore.exceptions.BookAlreadyExistsException;
+import com.daniyal.bookstore.exceptions.InvalidCredentialsException;
 import com.daniyal.bookstore.exceptions.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,5 +43,26 @@ public class GlobalExceptionHandler {
         apiErrorResponse.setErrorCode("USER_ALREADY_EXISTS");
         apiErrorResponse.setErrors(exception.getErrorMap());
         return new ResponseEntity<>(apiErrorResponse,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException exception)
+    {
+        return new ResponseEntity<>(ApiErrorResponse.builder()
+                .message(exception.getMessage())
+                .errorCode("INVALID_CREDENTIALS")
+                .errors(new HashMap<>())
+                .build(),HttpStatus.BAD_REQUEST);
+    }
+
+
+    @ExceptionHandler(BookAlreadyExistsException.class)
+    public ResponseEntity<ApiErrorResponse> handleBookAlreadyExistsException(BookAlreadyExistsException exception)
+    {
+        return new ResponseEntity<>(ApiErrorResponse.builder()
+                .message(exception.getMessage())
+                .errorCode("BOOK_ALREADY_EXISTS")
+                .errors(new HashMap<>())
+                .build(),HttpStatus.BAD_REQUEST);
     }
 }
