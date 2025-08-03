@@ -50,7 +50,7 @@ public class UserController {
                     .id(user.getId())
                     .roles(user.getRoles())
                     .build();
-            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+            return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
         }
        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
