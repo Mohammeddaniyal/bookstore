@@ -1,15 +1,14 @@
 package com.daniyal.bookstore.exceptions;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Map;
 
 @Setter
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ApiErrorResponse {
     private String message;
     private String errorCode;
