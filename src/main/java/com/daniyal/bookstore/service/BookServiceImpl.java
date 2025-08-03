@@ -1,0 +1,76 @@
+package com.daniyal.bookstore.service;
+
+import com.daniyal.bookstore.dto.BookRequestDTO;
+import com.daniyal.bookstore.dto.BookResponseDTO;
+import com.daniyal.bookstore.entity.Book;
+import com.daniyal.bookstore.exceptions.BookAlreadyExistsException;
+import com.daniyal.bookstore.exceptions.InvalidCredentialsException;
+import com.daniyal.bookstore.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+@Service
+public class BookServiceImpl implements BookService{
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Override
+    public BookResponseDTO createBook(BookRequestDTO bookRequest) {
+        Optional<Book> optionalBook=bookRepository.findByIsbn(bookRequest.getIsbn());
+        if(optionalBook.isPresent())
+        {
+            throw new BookAlreadyExistsException("A Book with same ISBN already exists.");
+        }
+
+        optionalBook=bookRepository.findByAuthorAndTitle(bookRequest.getAuthor(), bookRequest.getTitle());
+        if(optionalBook.isPresent())
+        {
+            throw new BookAlreadyExistsException("A Book with same title and author already exists.");
+        }
+
+        Book book=Book.builder()
+                .title(bookRequest.getTitle())
+                .author(bookRequest.getAuthor())
+                .isbn(bookRequest.getIsbn())
+                .description(bookRequest.getDescription())
+                .price(bookRequest.getPrice())
+                .quantity(bookRequest.getQuantity())
+                .build();
+        Book savedBook=bookRepository.save(book);
+        return BookResponseDTO.builder()
+                .id(savedBook.getId())
+                .title(savedBook.getTitle())
+                .author(savedBook.getAuthor())
+                .isbn(savedBook.getIsbn())
+                .description(savedBook.getDescription())
+                .price(savedBook.getPrice())
+                .quantity(savedBook.getQuantity())
+                .build();
+    }
+
+    @Override
+    public Optional<BookResponseDTO> getBookById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Page<BookResponseDTO> getAllBooks(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Optional<BookResponseDTO> updateBook(Long id, BookRequestDTO bookRequest) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void deleteBook(Long id) {
+
+    }
+}
