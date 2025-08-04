@@ -18,7 +18,7 @@ public class JwtUtil {
 
 
     private Key key;
-    private final long JWT_EXPIRATION = 1000 * 60  * 10; // 5 min
+    private final long JWT_EXPIRATION = 1000 * 60  * 60 * 10; // 10 hour
 
     @PostConstruct
     public void init() {
