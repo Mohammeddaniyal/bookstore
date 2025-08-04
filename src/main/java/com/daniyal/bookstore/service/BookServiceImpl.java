@@ -66,7 +66,12 @@ public class BookServiceImpl implements BookService{
 
     @Override
     public Optional<BookResponseDTO> updateBook(Long id, BookRequestDTO bookRequest) {
-        return Optional.empty();
+        // check if book exists or not
+        Optional<Book> optionalBook=bookRepository.findById(id);
+        if(!optionalBook.isPresent())
+        {
+            throw new BookNotExistsException("Book does not exists")
+        }
     }
 
     @Override
