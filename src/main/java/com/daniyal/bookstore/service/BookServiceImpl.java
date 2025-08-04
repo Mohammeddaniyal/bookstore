@@ -44,6 +44,10 @@ public class BookServiceImpl implements BookService{
                 .quantity(bookRequest.getQuantity())
                 .build();
         Book savedBook=bookRepository.save(book);
+        if(savedBook==null)
+        {
+            throw new DataPersistenceException("Failed to save book");
+        }
         return BookResponseDTO.builder()
                 .id(savedBook.getId())
                 .title(savedBook.getTitle())
@@ -74,6 +78,7 @@ public class BookServiceImpl implements BookService{
             throw new BookNotExistsException("Book does not exists");
         }
 
+        Book existingBook=optionalBook.get();
 
         //  Same author multiple times without same title OK
         // Same title multiple times without same author OK
@@ -87,19 +92,31 @@ public class BookServiceImpl implements BookService{
                 throw new BookAlreadyExistsException("A Book with same title and author already exists.");
             }
             }
-        Book book=Book.builder()
-                .id(id)
-                .title(bookRequest.getTitle())
-                .author(bookRequest.getAuthor())
-                .isbn(bookRequest.getIsbn())
-                .description(bookRequest.getDescription())
-                .price(bookRequest.getPrice())
-                .quantity(bookRequest.getQuantity())
-                .build();
-        Book savedBook=bookRepository.save(book);
+
+        if(bookRequest.getAuthor()!=null)
+        {
+            existingBook.setAuthor(bookRequest.getAuthor());
+        }
+        if(bookRequest.getTitle()!=null)
+        {
+            existingBook.setTitle(bookRequest.getTitle());
+        }
+        if(bookRequest.getDescription()!=null)
+        {
+            existingBook.setDescription(bookRequest.getDescription());
+        }
+        if(bookRequest.getPrice()!=null)
+        {
+            existingBook.setPrice(bookRequest.getPrice());
+        }if(bookRequest.getQuantity()!=null)
+        {
+            existingBook.setQuantity(bookRequest.getQuantity());
+        }
+
+        Book savedBook=bookRepository.save(existingBook);
         if(savedBook==null)
         {
-            throw new DataPersistenceException("Failed to save book");
+            throw new DataPersistenceException("Failed to update book");
         }
         return BookResponseDTO.builder()
                         .id(savedBook.getId())
