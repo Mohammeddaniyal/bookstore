@@ -14,5 +14,5 @@ public class BookUpdateDTO {
     private String author;
     private String description;
     private BigDecimal price;
-    private int quantity;
+    private Integer quantity;
 }
