@@ -1,16 +1,12 @@
 package com.daniyal.bookstore;
 
-import com.daniyal.bookstore.exceptions.ApiErrorResponse;
-import com.daniyal.bookstore.exceptions.BookAlreadyExistsException;
-import com.daniyal.bookstore.exceptions.InvalidCredentialsException;
-import com.daniyal.bookstore.exceptions.UserAlreadyExistsException;
+import com.daniyal.bookstore.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +38,7 @@ public class GlobalExceptionHandler {
         apiErrorResponse.setMessage("User registration failed due to duplicate entries");
         apiErrorResponse.setErrorCode("USER_ALREADY_EXISTS");
         apiErrorResponse.setErrors(exception.getErrorMap());
-        return new ResponseEntity<>(apiErrorResponse,HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiErrorResponse,HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
@@ -52,7 +48,7 @@ public class GlobalExceptionHandler {
                 .message(exception.getMessage())
                 .errorCode("INVALID_CREDENTIALS")
                 .errors(new HashMap<>())
-                .build(),HttpStatus.BAD_REQUEST);
+                .build(),HttpStatus.UNAUTHORIZED);
     }
 
 
@@ -63,6 +59,24 @@ public class GlobalExceptionHandler {
                 .message(exception.getMessage())
                 .errorCode("BOOK_ALREADY_EXISTS")
                 .errors(new HashMap<>())
-                .build(),HttpStatus.BAD_REQUEST);
+                .build(),HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(BookNotExistsException.class)
+    public ResponseEntity<ApiErrorResponse> handleBookNotExistsException(BookNotExistsException exception)
+    {
+        return new ResponseEntity<>(ApiErrorResponse.builder()
+                .message(exception.getMessage())
+                .errorCode("BOOK_NOT_EXISTS")
+                .errors(new HashMap<>())
+                .build(),HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(DataPersistenceException.class)
+    public ResponseEntity<ApiErrorResponse> handleDataPersistenceException(DataPersistenceException exception)
+    {
+        return new ResponseEntity<>(ApiErrorResponse.builder()
+                .message(exception.getMessage())
+                .errorCode("BOOK_NOT_EXISTS")
+                .errors(new HashMap<>())
+                .build(),HttpStatus.NOT_FOUND);
     }
 }
