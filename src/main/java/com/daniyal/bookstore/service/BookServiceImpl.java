@@ -5,15 +5,13 @@ import com.daniyal.bookstore.dto.BookResponseDTO;
 import com.daniyal.bookstore.entity.Book;
 import com.daniyal.bookstore.exceptions.BookAlreadyExistsException;
 import com.daniyal.bookstore.exceptions.BookNotExistsException;
-import com.daniyal.bookstore.exceptions.InvalidCredentialsException;
+import com.daniyal.bookstore.exceptions.DataPersistenceException;
 import com.daniyal.bookstore.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 @Service
 public class BookServiceImpl implements BookService{
@@ -66,7 +64,7 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public Optional<BookResponseDTO> updateBook(Long id, BookRequestDTO bookRequest) {
+    public BookResponseDTO updateBook(Long id, BookRequestDTO bookRequest) {
         // check if book exists or not
         Optional<Book> optionalBook=bookRepository.findById(id);
         if(!optionalBook.isPresent())
@@ -111,9 +109,9 @@ public class BookServiceImpl implements BookService{
         Book savedBook=bookRepository.save(book);
         if(savedBook==null)
         {
-            return Optional.empty();
+            throw new DataPersistenceException("Failed to save book");
         }
-        return Optional.ofNullable(BookResponseDTO.builder()
+        return BookResponseDTO.builder()
                         .id(savedBook.getId())
                         .title(savedBook.getTitle())
                         .author(savedBook.getAuthor())
@@ -121,7 +119,7 @@ public class BookServiceImpl implements BookService{
                         .description(savedBook.getDescription())
                         .price(savedBook.getPrice())
                         .quantity(savedBook.getQuantity())
-                        .build());
+                        .build();
     }
 
     @Override
