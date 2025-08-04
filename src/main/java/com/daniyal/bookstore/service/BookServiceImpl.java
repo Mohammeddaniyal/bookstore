@@ -70,7 +70,63 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public BookResponseDTO updateBook(Long id, BookUpdateDTO bookRequest) {
+    public BookResponseDTO fullUpdateBook(Long id, BookRequestDTO bookRequest) {
+        // check if book exists or not
+        Optional<Book> optionalBook=bookRepository.findById(id);
+        if(!optionalBook.isPresent())
+        {
+            throw new BookNotExistsException("Book does not exists");
+        }
+
+        // check if user is trying to update ISBN throw exception
+        Book existingBook=optionalBook.get();
+
+        if(!existingBook.getIsbn().equals(bookRequest.getIsbn()))
+        {
+           throw new ImmutableFieldException("ISBN cannot be updated");
+        }
+
+        //  Same author multiple times without same title OK
+        // Same title multiple times without same author OK
+        // but same author with same title and vice versa duplicacy case
+
+        optionalBook=bookRepository.findByAuthorAndTitle(bookRequest.getAuthor(),bookRequest.getTitle());
+        if(optionalBook.isPresent()) {
+            Book b;
+            b = optionalBook.get();
+            if (!id.equals(b.getId())) {
+                throw new BookAlreadyExistsException("A Book with same title and author already exists.");
+            }
+        }
+
+        Book book=Book.builder()
+                .title(bookRequest.getTitle())
+                .author(bookRequest.getAuthor())
+                .isbn(bookRequest.getIsbn())
+                .description(bookRequest.getDescription())
+                .price(bookRequest.getPrice())
+                .quantity(bookRequest.getQuantity())
+                .build();
+
+
+        Book savedBook=bookRepository.save(book);
+        if(savedBook==null)
+        {
+            throw new DataPersistenceException("Failed to update book");
+        }
+        return BookResponseDTO.builder()
+                .id(savedBook.getId())
+                .title(savedBook.getTitle())
+                .author(savedBook.getAuthor())
+                .isbn(savedBook.getIsbn())
+                .description(savedBook.getDescription())
+                .price(savedBook.getPrice())
+                .quantity(savedBook.getQuantity())
+                .build();
+    }
+
+    @Override
+    public BookResponseDTO partialUpdateBook(Long id, BookUpdateDTO bookRequest) {
         // check if book exists or not
         Optional<Book> optionalBook=bookRepository.findById(id);
         if(!optionalBook.isPresent())
