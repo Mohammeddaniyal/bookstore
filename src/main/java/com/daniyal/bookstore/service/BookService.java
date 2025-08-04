@@ -2,6 +2,7 @@ package com.daniyal.bookstore.service;
 
 import com.daniyal.bookstore.dto.BookRequestDTO;
 import com.daniyal.bookstore.dto.BookResponseDTO;
+import com.daniyal.bookstore.dto.BookUpdateDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,6 +12,6 @@ public interface BookService {
     BookResponseDTO createBook(BookRequestDTO bookRequest);
     Optional<BookResponseDTO> getBookById(Long id);
     Page<BookResponseDTO> getAllBooks(Pageable pageable);
-    BookResponseDTO updateBook(Long id, BookRequestDTO bookRequest);
+    BookResponseDTO updateBook(Long id, BookUpdateDTO bookRequest);
     void deleteBook(Long id);
 }
