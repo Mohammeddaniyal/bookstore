@@ -23,7 +23,7 @@ public class BookController {
         return new ResponseEntity<>(bookService.createBook(bookRequest),HttpStatus.CREATED);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<BookResponseDTO> updateBook(@@RequestBody BookUpdateDTO bookRequest, @PathVariable Long id)
+    public ResponseEntity<BookResponseDTO> updateBook(@RequestBody BookUpdateDTO bookRequest, @PathVariable Long id)
     {
         return new ResponseEntity<>(bookService.updateBook(id,bookRequest),HttpStatus.OK);
     }
