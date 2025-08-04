@@ -74,27 +74,6 @@ public class BookServiceImpl implements BookService{
             throw new BookNotExistsException("Book does not exists");
         }
 
-        // ISBN is immutable so ADMIN should not change it
-        // hence it will lead to conflict
-        Book existingBook;
-        existingBook=optionalBook.get();
-
-            if (!existingBook.getIsbn().equals(bookRequest.getIsbn())){
-                throw new ImmutableFieldException("ISBN cannot be changed once a book is created.")
-        }
-//        // check for duplicacy
-//        // ISBN should be unqiue
-//        optionalBook=bookRepository.findByIsbn(bookRequest.getIsbn());
-//        if(optionalBook.isPresent())
-//        {
-//            b=optionalBook.get();
-//            if(!id.equals(b.getId()))
-//            {
-//                // duplicacy case
-//                throw new BookAlreadyExistsException("A Book with same ISBN already exists.");
-//            }
-//        }
-
 
         //  Same author multiple times without same title OK
         // Same title multiple times without same author OK
