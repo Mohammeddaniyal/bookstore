@@ -79,4 +79,14 @@ public class GlobalExceptionHandler {
                 .errors(new HashMap<>())
                 .build(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    @ExceptionHandler(ImmutableFieldException.class)
+    public ResponseEntity<ApiErrorResponse> handleImmutableFieldException(ImmutableFieldException exception)
+    {
+        return new ResponseEntity<>(ApiErrorResponse.builder()
+                .message(exception.getMessage())
+                .errorCode("IMMUTABLE_FILED_ERROR")
+                .errors(new HashMap<>())
+                .build(),HttpStatus.BAD_REQUEST);
+    }
+
 }
