@@ -4,6 +4,7 @@ import com.daniyal.bookstore.dto.BookRequestDTO;
 import com.daniyal.bookstore.dto.BookResponseDTO;
 import com.daniyal.bookstore.entity.Book;
 import com.daniyal.bookstore.exceptions.BookAlreadyExistsException;
+import com.daniyal.bookstore.exceptions.BookNotExistsException;
 import com.daniyal.bookstore.exceptions.InvalidCredentialsException;
 import com.daniyal.bookstore.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,8 +71,57 @@ public class BookServiceImpl implements BookService{
         Optional<Book> optionalBook=bookRepository.findById(id);
         if(!optionalBook.isPresent())
         {
-            throw new BookNotExistsException("Book does not exists")
+            throw new BookNotExistsException("Book does not exists");
         }
+        Book b;
+        // check for duplicacy
+        // ISBN should be unqiue
+        optionalBook=bookRepository.findByIsbn(bookRequest.getIsbn());
+        if(optionalBook.isPresent())
+        {
+            b=optionalBook.get();
+            if(id.equals(b.getId()))
+            {
+                // duplicacy case
+                throw new BookAlreadyExistsException("A Book with same ISBN already exists.");
+            }
+        }
+
+
+        //  Same author multiple times without same title OK
+        // Same title multiple times without same author OK
+        // but same author with same title and vice versa duplicacy case
+
+        optionalBook=bookRepository.findByAuthorAndTitle(bookRequest.getAuthor(),bookRequest.getTitle());
+        if(optionalBook.isPresent()) {
+            b = optionalBook.get();
+            if (id.equals(b.getId())) {
+                throw new BookAlreadyExistsException("A Book with same title and author already exists.");
+            }
+            }
+        Book book=Book.builder()
+                .id(id)
+                .title(bookRequest.getTitle())
+                .author(bookRequest.getAuthor())
+                .isbn(bookRequest.getIsbn())
+                .description(bookRequest.getDescription())
+                .price(bookRequest.getPrice())
+                .quantity(bookRequest.getQuantity())
+                .build();
+        Book savedBook=bookRepository.save(book);
+        if(savedBook==null)
+        {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(BookResponseDTO.builder()
+                        .id(savedBook.getId())
+                        .title(savedBook.getTitle())
+                        .author(savedBook.getAuthor())
+                        .isbn(savedBook.getIsbn())
+                        .description(savedBook.getDescription())
+                        .price(savedBook.getPrice())
+                        .quantity(savedBook.getQuantity())
+                        .build());
     }
 
     @Override
