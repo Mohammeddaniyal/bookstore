@@ -75,8 +75,8 @@ public class GlobalExceptionHandler {
     {
         return new ResponseEntity<>(ApiErrorResponse.builder()
                 .message(exception.getMessage())
-                .errorCode("BOOK_NOT_EXISTS")
+                .errorCode("DATA_PERSISTENCE_ERROR")
                 .errors(new HashMap<>())
-                .build(),HttpStatus.NOT_FOUND);
+                .build(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
