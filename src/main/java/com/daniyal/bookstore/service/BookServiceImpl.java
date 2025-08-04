@@ -100,6 +100,7 @@ public class BookServiceImpl implements BookService{
         }
 
         Book book=Book.builder()
+                .id(id)
                 .title(bookRequest.getTitle())
                 .author(bookRequest.getAuthor())
                 .isbn(bookRequest.getIsbn())
