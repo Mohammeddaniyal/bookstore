@@ -78,7 +78,7 @@ public class BookServiceImpl implements BookService{
         if(optionalBook.isPresent())
         {
             b=optionalBook.get();
-            if(id.equals(b.getId()))
+            if(!id.equals(b.getId()))
             {
                 // duplicacy case
                 throw new BookAlreadyExistsException("A Book with same ISBN already exists.");
@@ -93,7 +93,7 @@ public class BookServiceImpl implements BookService{
         optionalBook=bookRepository.findByAuthorAndTitle(bookRequest.getAuthor(),bookRequest.getTitle());
         if(optionalBook.isPresent()) {
             b = optionalBook.get();
-            if (id.equals(b.getId())) {
+            if (!id.equals(b.getId())) {
                 throw new BookAlreadyExistsException("A Book with same title and author already exists.");
             }
             }
