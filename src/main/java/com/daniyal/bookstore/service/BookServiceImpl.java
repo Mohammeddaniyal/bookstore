@@ -2,10 +2,12 @@ package com.daniyal.bookstore.service;
 
 import com.daniyal.bookstore.dto.BookRequestDTO;
 import com.daniyal.bookstore.dto.BookResponseDTO;
+import com.daniyal.bookstore.dto.BookUpdateDTO;
 import com.daniyal.bookstore.entity.Book;
 import com.daniyal.bookstore.exceptions.BookAlreadyExistsException;
 import com.daniyal.bookstore.exceptions.BookNotExistsException;
 import com.daniyal.bookstore.exceptions.DataPersistenceException;
+import com.daniyal.bookstore.exceptions.ImmutableFieldException;
 import com.daniyal.bookstore.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -64,26 +66,34 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public BookResponseDTO updateBook(Long id, BookRequestDTO bookRequest) {
+    public BookResponseDTO updateBook(Long id, BookUpdateDTO bookRequest) {
         // check if book exists or not
         Optional<Book> optionalBook=bookRepository.findById(id);
         if(!optionalBook.isPresent())
         {
             throw new BookNotExistsException("Book does not exists");
         }
-        Book b;
-        // check for duplicacy
-        // ISBN should be unqiue
-        optionalBook=bookRepository.findByIsbn(bookRequest.getIsbn());
-        if(optionalBook.isPresent())
-        {
-            b=optionalBook.get();
-            if(!id.equals(b.getId()))
-            {
-                // duplicacy case
-                throw new BookAlreadyExistsException("A Book with same ISBN already exists.");
-            }
+
+        // ISBN is immutable so ADMIN should not change it
+        // hence it will lead to conflict
+        Book existingBook;
+        existingBook=optionalBook.get();
+
+            if (!existingBook.getIsbn().equals(bookRequest.getIsbn())){
+                throw new ImmutableFieldException("ISBN cannot be changed once a book is created.")
         }
+//        // check for duplicacy
+//        // ISBN should be unqiue
+//        optionalBook=bookRepository.findByIsbn(bookRequest.getIsbn());
+//        if(optionalBook.isPresent())
+//        {
+//            b=optionalBook.get();
+//            if(!id.equals(b.getId()))
+//            {
+//                // duplicacy case
+//                throw new BookAlreadyExistsException("A Book with same ISBN already exists.");
+//            }
+//        }
 
 
         //  Same author multiple times without same title OK
@@ -92,6 +102,7 @@ public class BookServiceImpl implements BookService{
 
         optionalBook=bookRepository.findByAuthorAndTitle(bookRequest.getAuthor(),bookRequest.getTitle());
         if(optionalBook.isPresent()) {
+            Book b;
             b = optionalBook.get();
             if (!id.equals(b.getId())) {
                 throw new BookAlreadyExistsException("A Book with same title and author already exists.");
