@@ -11,6 +11,6 @@ public interface BookService {
     BookResponseDTO createBook(BookRequestDTO bookRequest);
     Optional<BookResponseDTO> getBookById(Long id);
     Page<BookResponseDTO> getAllBooks(Pageable pageable);
-    Optional<BookResponseDTO> updateBook(Long id,BookRequestDTO bookRequest);
+    BookResponseDTO updateBook(Long id, BookRequestDTO bookRequest);
     void deleteBook(Long id);
 }
