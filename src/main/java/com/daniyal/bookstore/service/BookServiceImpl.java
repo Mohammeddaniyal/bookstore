@@ -62,6 +62,23 @@ public class BookServiceImpl implements BookService{
     @Override
     public BookResponseDTO getBookById(Long id) {
 
+        Optional<Book> optionalBook=bookRepository.findById(id);
+        if(optionalBook.isPresent()==false)
+        {
+            throw new BookNotExistsException("Book not exits");
+        }
+
+        Book dbBook=optionalBook.get();
+
+        return BookResponseDTO.builder()
+                .id(dbBook.getId())
+                .title(dbBook.getTitle())
+                .author(dbBook.getAuthor())
+                .isbn(dbBook.getIsbn())
+                .description(dbBook.getDescription())
+                .price(dbBook.getPrice())
+                .quantity(dbBook.getQuantity())
+                .build();
     }
 
     @Override
