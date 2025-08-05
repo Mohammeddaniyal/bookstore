@@ -193,7 +193,6 @@ public class BookServiceImpl implements BookService{
         {
             throw new BookNotExistsException("Book not exists.")
         }
-
-
+        bookRepository.deleteById(id);
     }
 }
