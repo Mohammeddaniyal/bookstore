@@ -67,6 +67,9 @@ public class BookServiceImpl implements BookService{
         {
             throw new BookNotExistsException("Book not exits");
         }
+// also can do with this style
+//        Book dbBook = bookRepository.findById(id)
+//                .orElseThrow(() -> new BookNotExistsException("Book not exists"));
 
         Book dbBook=optionalBook.get();
 
