@@ -189,5 +189,11 @@ public class BookServiceImpl implements BookService{
     @Override
     public void deleteBook(Long id) {
 
+        if(!bookRepository.findById(id).isPresent())
+        {
+            throw new BookNotExistsException("Book not exists.")
+        }
+
+
     }
 }
