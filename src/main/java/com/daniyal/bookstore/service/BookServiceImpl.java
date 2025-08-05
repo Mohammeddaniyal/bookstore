@@ -60,8 +60,8 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public Optional<BookResponseDTO> getBookById(Long id) {
-        return Optional.empty();
+    public BookResponseDTO getBookById(Long id) {
+
     }
 
     @Override
