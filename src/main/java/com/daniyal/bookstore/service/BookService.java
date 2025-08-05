@@ -6,11 +6,9 @@ import com.daniyal.bookstore.dto.BookUpdateDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
-
 public interface BookService {
     BookResponseDTO createBook(BookRequestDTO bookRequest);
-    Optional<BookResponseDTO> getBookById(Long id);
+    BookResponseDTO getBookById(Long id);
     Page<BookResponseDTO> getAllBooks(Pageable pageable);
     BookResponseDTO partialUpdateBook(Long id, BookUpdateDTO bookRequest);
     BookResponseDTO fullUpdateBook(Long id,BookRequestDTO bookRequest);
