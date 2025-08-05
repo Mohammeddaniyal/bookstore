@@ -8,6 +8,7 @@ import com.daniyal.bookstore.service.BookService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,5 +32,11 @@ public class BookController {
     public ResponseEntity<BookResponseDTO> fullUpdateBook(@PathVariable Long id,@Valid @RequestBody BookRequestDTO bookRequest)
     {
         return new ResponseEntity<>(bookService.fullUpdateBook(id,bookRequest),HttpStatus.OK);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteBook(@PathVariable Long id)
+    {
+        bookService.deleteBook(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
