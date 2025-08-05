@@ -191,7 +191,7 @@ public class BookServiceImpl implements BookService{
 
         if(!bookRepository.findById(id).isPresent())
         {
-            throw new BookNotExistsException("Book not exists.")
+            throw new BookNotExistsException("Book not exists.");
         }
         bookRepository.deleteById(id);
     }
