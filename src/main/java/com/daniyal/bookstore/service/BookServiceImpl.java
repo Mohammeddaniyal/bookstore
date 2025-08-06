@@ -87,8 +87,17 @@ public class BookServiceImpl implements BookService{
 
     @Override
     public List<BookResponseDTO> getAllBooks() {
-        List<Book> books=bookRepository
-        return List.of();
+        List<Book> books=bookRepository.findAll();
+        return books.stream()
+                .map(book -> BookResponseDTO.builder()
+                        .id(book.getId())
+                        .author(book.getAuthor())
+                        .title(book.getTitle())
+                        .description(book.getDescription())
+                        .price(book.getPrice())
+                        .quantity(book.getQuantity())
+                        .isbn(book.getIsbn())
+                        .build());
     }
 
     @Override
