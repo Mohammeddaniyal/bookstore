@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class BookServiceImpl implements BookService{
 
@@ -97,7 +99,8 @@ public class BookServiceImpl implements BookService{
                         .price(book.getPrice())
                         .quantity(book.getQuantity())
                         .isbn(book.getIsbn())
-                        .build());
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override
