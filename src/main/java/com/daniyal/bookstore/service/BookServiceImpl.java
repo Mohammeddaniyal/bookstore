@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 @Service
 public class BookServiceImpl implements BookService{
@@ -82,6 +83,12 @@ public class BookServiceImpl implements BookService{
                 .price(dbBook.getPrice())
                 .quantity(dbBook.getQuantity())
                 .build();
+    }
+
+    @Override
+    public List<BookResponseDTO> getAllBooks() {
+        List<Book> books=bookRepository
+        return List.of();
     }
 
     @Override
