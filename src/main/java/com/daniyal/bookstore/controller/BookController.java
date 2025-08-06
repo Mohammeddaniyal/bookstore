@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +45,12 @@ public class BookController {
     {
         return new ResponseEntity<>(bookService.getBookById(id),HttpStatus.FOUND);
     }
+    @GetMapping
+    public ResponseEntity<Page<BookResponseDTO>> getAllBooks(
+            @RequestParam(defaultValue="0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy)
+    {
 
+    }
 }
