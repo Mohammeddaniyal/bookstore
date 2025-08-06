@@ -86,7 +86,16 @@ public class BookServiceImpl implements BookService{
 
     @Override
     public Page<BookResponseDTO> getAllBooks(Pageable pageable) {
-        return null;
+        return bookRepository.findAll(pageable)
+                .map(book -> BookResponseDTO.builder()
+                        .id(book.getId())
+                        .author(book.getAuthor())
+                        .title(book.getTitle())
+                        .description(book.getDescription())
+                        .price(book.getPrice())
+                        .quantity(book.getQuantity())
+                        .isbn(book.getIsbn())
+                        .build());
     }
 
     @Override
