@@ -60,7 +60,7 @@ public class BookController {
         Page<BookResponseDTO> books=bookService.getAllBooks(pageable);
         return ResponseEntity.ok(books);
     }
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<BookResponseDTO>> getAllBooks()
     {
         return ResponseEntity.ok(bookService.getAllBooks());
