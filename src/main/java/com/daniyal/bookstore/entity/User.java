@@ -26,4 +26,8 @@ public class User {
     private String email;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles;
+
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
+
 }
