@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Setter
 @Getter
@@ -25,4 +26,8 @@ public class Book {
     private String description;
     private BigDecimal price;
     private int quantity;
+
+    @OneToMany(mappedBy = "book")
+    private List<OrderItem> orderItems;
+
 }
