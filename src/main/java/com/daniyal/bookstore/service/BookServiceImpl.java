@@ -261,6 +261,30 @@ public class BookServiceImpl implements BookService{
 
         Set<Author> authorSet= Collections.emptySet();
 
+        // duplicacy check
+
+        if(bookRequest.getAuthorIds()!=null && !bookRequest.getAuthorIds().isEmpty() && bookRequest.getTitle()!=null && !bookRequest.getTitle().isEmpty())
+        {
+            List<Book> existingBooks=bookRepository.findByTitle(bookRequest.getTitle());
+
+            Long updateBookId=existingBook.getId();
+
+            Set<Long> authorIdsRequest=bookRequest.getAuthorIds();
+            for(Book _existingBook:existingBooks)
+            {
+                if(_existingBook.getId().equals(updateBookId)) continue;
+                Set<Author> authorSafeCopy=new HashSet<>(_existingBook.getAuthors());
+                Set<Long> authorIdsDB=authorSafeCopy
+                        .stream()
+                        .map(Author::getId)
+                        .collect(Collectors.toSet());
+                if(authorIdsDB.equals(authorIdsRequest))
+                {
+                    throw new BookAlreadyExistsException("Book with the same title and authors already exists.");
+                }
+            }
+
+        }
         if(bookRequest.getAuthorIds()!=null && !bookRequest.getAuthorIds().isEmpty())
         {
             authorSet=new HashSet<>(authorRepository.findAllById(bookRequest.getAuthorIds()));
@@ -270,15 +294,15 @@ public class BookServiceImpl implements BookService{
             }
             existingBook.setAuthors(authorSet);
         }
-        if(bookRequest.getTitle()!=null)
+        if(bookRequest.getTitle()!=null && !bookRequest.getTitle().isEmpty())
         {
             existingBook.setTitle(bookRequest.getTitle());
         }
-        if(bookRequest.getGenre()!=null)
+        if(bookRequest.getGenre()!=null && !bookRequest.getGenre().isEmpty())
         {
             existingBook.setGenre(bookRequest.getGenre());
         }
-        if(bookRequest.getDescription()!=null)
+        if(bookRequest.getDescription()!=null && !bookRequest.getDescription().isEmpty())
         {
             existingBook.setDescription(bookRequest.getDescription());
         }
@@ -294,6 +318,8 @@ public class BookServiceImpl implements BookService{
             existingBook.setImageUrl(bookRequest.getImageUrl());
         }
         Book savedBook=bookRepository.save(existingBook);
+
+        authorSet=savedBook.getAuthors();
 
         Set<String> authors=authorSet.stream()
                 .map(Author::getName)
