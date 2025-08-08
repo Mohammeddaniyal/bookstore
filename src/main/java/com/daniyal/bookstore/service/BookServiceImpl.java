@@ -185,7 +185,8 @@ public class BookServiceImpl implements BookService{
         for(Book _existingBook:existingBooks)
         {
             if(_existingBook.getId().equals(updateBookId)) continue;
-            Set<Long> authorIdsDB=_existingBook.getAuthors()
+            Set<Author> authorSafeCopy=new HashSet<>(existingBook.getAuthors());
+            Set<Long> authorIdsDB=authorSafeCopy
                     .stream()
                     .map(Author::getId)
                     .collect(Collectors.toSet());
