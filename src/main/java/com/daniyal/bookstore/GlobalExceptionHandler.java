@@ -61,12 +61,12 @@ public class GlobalExceptionHandler {
                 .errors(new HashMap<>())
                 .build(),HttpStatus.CONFLICT);
     }
-    @ExceptionHandler(BookNotExistsException.class)
-    public ResponseEntity<ApiErrorResponse> handleBookNotExistsException(BookNotExistsException exception)
+    @ExceptionHandler(BookNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleBookNotFoundException(BookNotFoundException exception)
     {
         return new ResponseEntity<>(ApiErrorResponse.builder()
                 .message(exception.getMessage())
-                .errorCode("BOOK_NOT_EXISTS")
+                .errorCode("BOOK_NOT_FOUND")
                 .errors(new HashMap<>())
                 .build(),HttpStatus.NOT_FOUND);
     }
@@ -84,12 +84,12 @@ public class GlobalExceptionHandler {
     {
         return new ResponseEntity<>(ApiErrorResponse.builder()
                 .message(exception.getMessage())
-                .errorCode("IMMUTABLE_FILED_ERROR")
+                .errorCode("IMMUTABLE_FIELD_ERROR")
                 .errors(new HashMap<>())
                 .build(),HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(AuthorAlreadyExistsException.class)
-    public ResponseEntity<ApiErrorResponse> handleBookAlreadyExistsException(AuthorAlreadyExistsException exception)
+    public ResponseEntity<ApiErrorResponse> handleAuthorAlreadyExistsException(AuthorAlreadyExistsException exception)
     {
         return new ResponseEntity<>(ApiErrorResponse.builder()
                 .message(exception.getMessage())
