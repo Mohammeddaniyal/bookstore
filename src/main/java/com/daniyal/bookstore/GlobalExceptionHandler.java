@@ -4,13 +4,18 @@ import com.daniyal.bookstore.entity.Author;
 import com.daniyal.bookstore.exceptions.*;
 import jakarta.persistence.PersistenceException;
 import org.hibernate.HibernateException;
+import org.hibernate.TypeMismatchException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -110,4 +115,44 @@ public class GlobalExceptionHandler {
                 .errors(new HashMap<>())
                 .build(),HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidJson(HttpMessageNotReadableException ex) {
+        return new ResponseEntity<>(ApiErrorResponse.builder()
+                .message("Malformed JSON request")
+                .errorCode("MALFORMED_JSON_REQUEST")
+                .errors(new HashMap<>())
+                .build(),HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler({ MethodArgumentTypeMismatchException.class, TypeMismatchException.class, MissingServletRequestParameterException.class })
+    public ResponseEntity<ApiErrorResponse> handleBadRequestParams(Exception ex) {
+        String errorMessage;
+        if (ex instanceof MissingServletRequestParameterException) {
+            MissingServletRequestParameterException e = (MissingServletRequestParameterException) ex;
+            errorMessage = "Required query parameter '" + e.getParameterName() + "' is missing";
+        } else if (ex instanceof MethodArgumentTypeMismatchException) {
+            MethodArgumentTypeMismatchException e = (MethodArgumentTypeMismatchException) ex;
+            errorMessage = "Parameter '" + e.getName() + "' should be of type " + e.getRequiredType().getSimpleName();
+        } else {
+            errorMessage = "Invalid query parameter";
+        }
+        return new ResponseEntity<>(ApiErrorResponse.builder()
+                .message(errorMessage)
+                .errorCode("ERR_INVALID_QUERY_PARAM")
+                .errors(new HashMap<>())
+                .build(),HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        String errorMessage = ex.getMessage() != null ? ex.getMessage() : "Invalid argument provided";
+
+        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+                .message(errorMessage)
+                .errorCode("ERR_ILLEGAL_ARGUMENT")
+                .errors(new HashMap<>())  // or empty map/list if preferred
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
 }
