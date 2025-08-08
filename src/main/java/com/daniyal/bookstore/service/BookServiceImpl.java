@@ -214,17 +214,15 @@ public class BookServiceImpl implements BookService{
 
         Set<Author> authorSet=new HashSet<>(authorRepository.findAllById(authorIdsRequest));
 
-        Book book=Book.builder()
-                .title(bookRequest.getTitle())
-                .authors(authorSet)
-                .genre(bookRequest.getGenre())
-                .isbn(bookRequest.getIsbn())
-                .description(bookRequest.getDescription())
-                .price(bookRequest.getPrice())
-                .quantity(bookRequest.getQuantity())
-                .imageUrl(bookRequest.getImageUrl())
-                .build();
-        Book savedBook=bookRepository.save(book);
+        existingBook.setTitle(bookRequest.getTitle());
+        existingBook.setAuthors(authorSet);
+        existingBook.setGenre(bookRequest.getGenre());
+        existingBook.setDescription(bookRequest.getDescription());
+        existingBook.setPrice(bookRequest.getPrice());
+        existingBook.setQuantity(bookRequest.getQuantity());
+        existingBook.setImageUrl(bookRequest.getImageUrl());
+
+        Book savedBook=bookRepository.save(existingBook);
         if(savedBook==null)
         {
             throw new DataPersistenceException("Failed to save book");
@@ -316,7 +314,7 @@ public class BookServiceImpl implements BookService{
     @Override
     public void deleteBook(Long id) {
 
-        if(!bookRepository.findById(id).isPresent())
+        if(bookRepository.findById(id).isEmpty())
         {
             throw new BookNotFoundException("Book not exists.");
         }
