@@ -2,12 +2,20 @@ package com.daniyal.bookstore.entity;
 
 import com.daniyal.bookstore.enums.OrderStatus;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Setter
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name="orders")
 public class Order {
 
     @Id
