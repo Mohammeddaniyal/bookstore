@@ -3,23 +3,27 @@ package com.daniyal.bookstore.service;
 import com.daniyal.bookstore.dto.BookRequestDTO;
 import com.daniyal.bookstore.dto.BookResponseDTO;
 import com.daniyal.bookstore.dto.BookUpdateDTO;
+import com.daniyal.bookstore.entity.Author;
 import com.daniyal.bookstore.entity.Book;
-import com.daniyal.bookstore.exceptions.BookAlreadyExistsException;
-import com.daniyal.bookstore.exceptions.BookNotExistsException;
-import com.daniyal.bookstore.exceptions.DataPersistenceException;
-import com.daniyal.bookstore.exceptions.ImmutableFieldException;
+import com.daniyal.bookstore.exceptions.*;
+import com.daniyal.bookstore.repository.AuthorRepository;
 import com.daniyal.bookstore.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService{
+
+    @Autowired
+    private AuthorRepository authorRepository;
 
     @Autowired
     private BookRepository bookRepository;
@@ -32,33 +36,56 @@ public class BookServiceImpl implements BookService{
             throw new BookAlreadyExistsException("A Book with same ISBN already exists.");
         }
 
-        optionalBook=bookRepository.findByAuthorAndTitle(bookRequest.getAuthor(), bookRequest.getTitle());
-        if(optionalBook.isPresent())
+        // perform duplicacy check
+        // only when Book with same title + same Set of Authors already exists
+        List<Book> existingBooks=bookRepository.findByTitle(bookRequest.getTitle());
+
+        Set<Long> authorIdsRequest=bookRequest.getAuthorIds();
+        for(Book existingBook:existingBooks)
         {
-            throw new BookAlreadyExistsException("A Book with same title and author already exists.");
+            Set<Long> authorIdsDB=existingBook.getAuthors()
+                    .stream()
+                    .map(Author::getId)
+                    .collect(Collectors.toSet());
+            if(authorIdsDB.equals(authorIdsRequest))
+            {
+                throw new BookAlreadyExistsException("Book with the same title and authors already exists.");
+            }
+        }
+
+        Set<Author> authorSet=new HashSet<>(authorRepository.findAllById(bookRequest.getAuthorIds()));
+        if(authorSet.size()!=bookRequest.getAuthorIds().size()) {
+            throw new AuthorNotFoundException("One or more authors not found");
         }
 
         Book book=Book.builder()
                 .title(bookRequest.getTitle())
-                .author(bookRequest.getAuthor())
+                .authors(authorSet)
+                .genre(bookRequest.getGenre())
                 .isbn(bookRequest.getIsbn())
                 .description(bookRequest.getDescription())
                 .price(bookRequest.getPrice())
                 .quantity(bookRequest.getQuantity())
+                .imageUrl(bookRequest.getImageUrl())
                 .build();
         Book savedBook=bookRepository.save(book);
         if(savedBook==null)
         {
             throw new DataPersistenceException("Failed to save book");
         }
+        Set<String> authors=authorSet.stream()
+                .map(Author::getName)
+                .collect(Collectors.toSet());
         return BookResponseDTO.builder()
                 .id(savedBook.getId())
                 .title(savedBook.getTitle())
-                .author(savedBook.getAuthor())
+                .authors(authors)
+                .genre(savedBook.getGenre())
                 .isbn(savedBook.getIsbn())
                 .description(savedBook.getDescription())
                 .price(savedBook.getPrice())
                 .quantity(savedBook.getQuantity())
+                .imageUrl(savedBook.getImageUrl())
                 .build();
     }
 
@@ -68,7 +95,7 @@ public class BookServiceImpl implements BookService{
         Optional<Book> optionalBook=bookRepository.findById(id);
         if(optionalBook.isPresent()==false)
         {
-            throw new BookNotExistsException("Book not exits");
+            throw new BookNotFoundException("Book not exits");
         }
 // also can do with this style
 //        Book dbBook = bookRepository.findById(id)
@@ -123,7 +150,7 @@ public class BookServiceImpl implements BookService{
         Optional<Book> optionalBook=bookRepository.findById(id);
         if(!optionalBook.isPresent())
         {
-            throw new BookNotExistsException("Book does not exists");
+            throw new BookNotFoundException("Book does not exists");
         }
 
         // check if user is trying to update ISBN throw exception
@@ -134,18 +161,41 @@ public class BookServiceImpl implements BookService{
            throw new ImmutableFieldException("ISBN cannot be updated");
         }
 
+
+        // perform duplicacy check
+        // only when Book with same title + same Set of Authors already exists against another record
+        // not with this one, skip if it's record comes
+        List<Book> existingBooks=bookRepository.findByTitle(bookRequest.getTitle());
+
+        Long updateBookId=existingBook.getId();
+
+        Set<Long> authorIdsRequest=bookRequest.getAuthorIds();
+        for(Book _existingBook:existingBooks)
+        {
+            if(_existingBook.getId().equals(updateBookId)) continue;
+            Set<Long> authorIdsDB=_existingBook.getAuthors()
+                    .stream()
+                    .map(Author::getId)
+                    .collect(Collectors.toSet());
+            if(authorIdsDB.equals(authorIdsRequest))
+            {
+                throw new BookAlreadyExistsException("Book with the same title and authors already exists.");
+            }
+        }
+
+
         //  Same author multiple times without same title OK
         // Same title multiple times without same author OK
         // but same author with same title and vice versa duplicacy case
 
-        optionalBook=bookRepository.findByAuthorAndTitle(bookRequest.getAuthor(),bookRequest.getTitle());
-        if(optionalBook.isPresent()) {
-            Book b;
-            b = optionalBook.get();
-            if (!id.equals(b.getId())) {
-                throw new BookAlreadyExistsException("A Book with same title and author already exists.");
-            }
-        }
+//        optionalBook=bookRepository.findByAuthorAndTitle(bookRequest.getAuthor(),bookRequest.getTitle());
+//        if(optionalBook.isPresent()) {
+//            Book b;
+//            b = optionalBook.get();
+//            if (!id.equals(b.getId())) {
+//                throw new BookAlreadyExistsException("A Book with same title and author already exists.");
+//            }
+//        }
 
         Book book=Book.builder()
                 .id(id)
@@ -180,7 +230,7 @@ public class BookServiceImpl implements BookService{
         Optional<Book> optionalBook=bookRepository.findById(id);
         if(!optionalBook.isPresent())
         {
-            throw new BookNotExistsException("Book does not exists");
+            throw new BookNotFoundException("Book does not exists");
         }
 
         Book existingBook=optionalBook.get();
@@ -239,7 +289,7 @@ public class BookServiceImpl implements BookService{
 
         if(!bookRepository.findById(id).isPresent())
         {
-            throw new BookNotExistsException("Book not exists.");
+            throw new BookNotFoundException("Book not exists.");
         }
         bookRepository.deleteById(id);
     }
