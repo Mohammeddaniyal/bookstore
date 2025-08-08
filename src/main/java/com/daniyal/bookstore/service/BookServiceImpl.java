@@ -145,7 +145,11 @@ public class BookServiceImpl implements BookService{
         return bookRepository.findAll(pageable)
                 .map(book -> BookResponseDTO.builder()
                         .id(book.getId())
-                        .author(book.getAuthor())
+                        .authors(
+                                book.getAuthors().stream()
+                                        .map(Author::getName)
+                                        .collect((Collectors.toSet()))
+                        )
                         .title(book.getTitle())
                         .description(book.getDescription())
                         .price(book.getPrice())
