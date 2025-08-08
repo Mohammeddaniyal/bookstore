@@ -88,5 +88,14 @@ public class GlobalExceptionHandler {
                 .errors(new HashMap<>())
                 .build(),HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(AuthorAlreadyExistsException.class)
+    public ResponseEntity<ApiErrorResponse> handleBookAlreadyExistsException(AuthorAlreadyExistsException exception)
+    {
+        return new ResponseEntity<>(ApiErrorResponse.builder()
+                .message(exception.getMessage())
+                .errorCode("AUTHOR_ALREADY_EXISTS")
+                .errors(new HashMap<>())
+                .build(),HttpStatus.CONFLICT);
+    }
 
 }
