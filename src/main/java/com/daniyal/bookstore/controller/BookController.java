@@ -27,7 +27,7 @@ public class BookController {
         return new ResponseEntity<>(bookService.createBook(bookRequest),HttpStatus.CREATED);
     }
     @PatchMapping("/{id}")
-    public ResponseEntity<BookResponseDTO> partialUpdateBook(@RequestBody BookUpdateDTO bookRequest, @PathVariable Long id)
+    public ResponseEntity<BookResponseDTO> partialUpdateBook(@Valid @RequestBody BookUpdateDTO bookRequest, @PathVariable Long id)
     {
         return new ResponseEntity<>(bookService.partialUpdateBook(id,bookRequest),HttpStatus.OK);
     }
