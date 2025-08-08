@@ -40,7 +40,8 @@ public class BookServiceImpl implements BookService{
         Set<Long> authorIdsRequest=bookRequest.getAuthorIds();
         for(Book existingBook:existingBooks)
         {
-            Set<Long> authorIdsDB=existingBook.getAuthors()
+            Set<Author> authorSafeCopy=new HashSet<>(existingBook.getAuthors());
+            Set<Long> authorIdsDB=authorSafeCopy
                     .stream()
                     .map(Author::getId)
                     .collect(Collectors.toSet());
@@ -66,10 +67,7 @@ public class BookServiceImpl implements BookService{
                 .imageUrl(bookRequest.getImageUrl())
                 .build();
         Book savedBook=bookRepository.save(book);
-        if(savedBook==null)
-        {
-            throw new DataPersistenceException("Failed to save book");
-        }
+
         Set<String> authors=authorSet.stream()
                 .map(Author::getName)
                 .collect(Collectors.toSet());
@@ -223,10 +221,7 @@ public class BookServiceImpl implements BookService{
         existingBook.setImageUrl(bookRequest.getImageUrl());
 
         Book savedBook=bookRepository.save(existingBook);
-        if(savedBook==null)
-        {
-            throw new DataPersistenceException("Failed to save book");
-        }
+
         Set<String> authors=authorSet.stream()
                 .map(Author::getName)
                 .collect(Collectors.toSet());
@@ -256,7 +251,7 @@ public class BookServiceImpl implements BookService{
 
         Set<Author> authorSet= Collections.emptySet();
 
-        if(bookRequest.getAuthorIds()!=null)
+        if(bookRequest.getAuthorIds()!=null && !bookRequest.getAuthorIds().isEmpty())
         {
             authorSet=new HashSet<>(authorRepository.findAllById(bookRequest.getAuthorIds()));
             if(authorSet.size()!=bookRequest.getAuthorIds().size())
@@ -289,10 +284,6 @@ public class BookServiceImpl implements BookService{
             existingBook.setImageUrl(bookRequest.getImageUrl());
         }
         Book savedBook=bookRepository.save(existingBook);
-        if(savedBook==null)
-        {
-            throw new DataPersistenceException("Failed to update book");
-        }
 
         Set<String> authors=authorSet.stream()
                 .map(Author::getName)
