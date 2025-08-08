@@ -90,7 +90,7 @@ public class BookServiceImpl implements BookService{
     public BookResponseDTO getBookById(Long id) {
 
         Optional<Book> optionalBook=bookRepository.findById(id);
-        if(optionalBook.isPresent()==false)
+        if(optionalBook.isEmpty())
         {
             throw new BookNotFoundException("Book not exits");
         }
@@ -162,7 +162,7 @@ public class BookServiceImpl implements BookService{
     public BookResponseDTO fullUpdateBook(Long id, BookRequestDTO bookRequest) {
         // check if book exists or not
         Optional<Book> optionalBook=bookRepository.findById(id);
-        if(!optionalBook.isPresent())
+        if(optionalBook.isEmpty())
         {
             throw new BookNotFoundException("Book does not exists");
         }
@@ -249,7 +249,7 @@ public class BookServiceImpl implements BookService{
     public BookResponseDTO partialUpdateBook(Long id, BookUpdateDTO bookRequest) {
         // check if book exists or not
         Optional<Book> optionalBook=bookRepository.findById(id);
-        if(!optionalBook.isPresent())
+        if(optionalBook.isEmpty())
         {
             throw new BookNotFoundException("Book does not exists");
         }
