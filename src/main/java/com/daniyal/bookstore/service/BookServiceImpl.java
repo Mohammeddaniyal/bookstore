@@ -8,10 +8,13 @@ import com.daniyal.bookstore.entity.Book;
 import com.daniyal.bookstore.exceptions.*;
 import com.daniyal.bookstore.repository.AuthorRepository;
 import com.daniyal.bookstore.repository.BookRepository;
+
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,6 +28,7 @@ public class BookServiceImpl implements BookService{
     @Autowired
     private BookRepository bookRepository;
 
+    //@Transactional
     @Override
     public BookResponseDTO createBook(BookRequestDTO bookRequest) {
         Optional<Book> optionalBook=bookRepository.findByIsbn(bookRequest.getIsbn());
@@ -35,32 +39,21 @@ public class BookServiceImpl implements BookService{
 
         // perform duplicacy check
         // only when Book with same title + same Set of Authors already exists
+        //List<Book> existingBooks=bookRepository.findByTitleWithAuthors(bookRequest.getTitle());
         List<Book> existingBooks=bookRepository.findByTitle(bookRequest.getTitle());
 
         Set<Long> authorIdsRequest=bookRequest.getAuthorIds();
         for(Book existingBook:existingBooks)
         {
-            /*
-             * Defensive copy of the authors Set is created here to prevent ConcurrentModificationException.
-             *
-             * This exception occurs because Hibernate uses its own implementation (PersistentSet) for
-             * managing lazy-loaded collections. While the collection is being initialized or synchronized,
-             * Hibernate may internally modify the PersistentSet (e.g., during flushing or loading phases).
-             *
-             * Iterating directly over this PersistentSet during these internal modifications can cause
-             * a ConcurrentModificationException, as the collection is structurally changed while iterating.
-             *
-             * By creating a new HashSet copy, we iterate over a stable, independent snapshot of the authors,
-             * ensuring that any internal Hibernate modifications do not affect our iteration.
-             *
-             * This approach prevents runtime exceptions without affecting the underlying database or entity state.
-             * It is a common and safe pattern when working with Hibernate lazy-loaded collections.
-             */
-            Set<Author> authorSafeCopy=new HashSet<>(existingBook.getAuthors());
+            //Hibernate.initialize(existingBook.getAuthors());
+            //Set<Author> authorSafeCopy=new HashSet<>(existingBook.getAuthors());
+            Set<Author> authorSafeCopy=existingBook.getAuthors();
+            System.out.println("Authors loaded: " + existingBook.getAuthors().size());
             Set<Long> authorIdsDB=authorSafeCopy
                     .stream()
                     .map(Author::getId)
                     .collect(Collectors.toSet());
+
             if(authorIdsDB.equals(authorIdsRequest))
             {
                 throw new BookAlreadyExistsException("Book with the same title and authors already exists.");
