@@ -37,7 +37,7 @@ public class Book {
     private String description;
     private BigDecimal price;
     private int quantity;
-
+    private String imageUrl;
     @OneToMany(mappedBy = "book")
     private List<OrderItem> orderItems;
 
