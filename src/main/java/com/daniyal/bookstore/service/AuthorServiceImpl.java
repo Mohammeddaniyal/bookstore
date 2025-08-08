@@ -7,9 +7,10 @@ import com.daniyal.bookstore.entity.Author;
 import com.daniyal.bookstore.exceptions.AuthorAlreadyExistsException;
 import com.daniyal.bookstore.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class AuthorServiceImpl implements AuthorService {
 
     @Autowired
