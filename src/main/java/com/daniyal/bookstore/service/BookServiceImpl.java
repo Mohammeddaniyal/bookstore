@@ -13,10 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -197,30 +194,37 @@ public class BookServiceImpl implements BookService{
 //            }
 //        }
 
+
+        Set<Author> authorSet=new HashSet<>(authorRepository.findAllById(authorIdsRequest));
+
         Book book=Book.builder()
-                .id(id)
                 .title(bookRequest.getTitle())
-                .author(bookRequest.getAuthor())
+                .authors(authorSet)
+                .genre(bookRequest.getGenre())
                 .isbn(bookRequest.getIsbn())
                 .description(bookRequest.getDescription())
                 .price(bookRequest.getPrice())
                 .quantity(bookRequest.getQuantity())
+                .imageUrl(bookRequest.getImageUrl())
                 .build();
-
-
         Book savedBook=bookRepository.save(book);
         if(savedBook==null)
         {
-            throw new DataPersistenceException("Failed to update book");
+            throw new DataPersistenceException("Failed to save book");
         }
+        Set<String> authors=authorSet.stream()
+                .map(Author::getName)
+                .collect(Collectors.toSet());
         return BookResponseDTO.builder()
                 .id(savedBook.getId())
                 .title(savedBook.getTitle())
-                .author(savedBook.getAuthor())
+                .authors(authors)
+                .genre(savedBook.getGenre())
                 .isbn(savedBook.getIsbn())
                 .description(savedBook.getDescription())
                 .price(savedBook.getPrice())
                 .quantity(savedBook.getQuantity())
+                .imageUrl(savedBook.getImageUrl())
                 .build();
     }
 
@@ -235,26 +239,24 @@ public class BookServiceImpl implements BookService{
 
         Book existingBook=optionalBook.get();
 
-        //  Same author multiple times without same title OK
-        // Same title multiple times without same author OK
-        // but same author with same title and vice versa duplicacy case
+        Set<Author> authorSet= Collections.emptySet();
 
-        optionalBook=bookRepository.findByAuthorAndTitle(bookRequest.getAuthor(),bookRequest.getTitle());
-        if(optionalBook.isPresent()) {
-            Book b;
-            b = optionalBook.get();
-            if (!id.equals(b.getId())) {
-                throw new BookAlreadyExistsException("A Book with same title and author already exists.");
-            }
-            }
-
-        if(bookRequest.getAuthor()!=null)
+        if(bookRequest.getAuthorIds()!=null)
         {
-            existingBook.setAuthor(bookRequest.getAuthor());
+            authorSet=new HashSet<>(authorRepository.findAllById(bookRequest.getAuthorIds()));
+            if(authorSet.size()!=bookRequest.getAuthorIds().size())
+            {
+                throw new AuthorNotFoundException("One or more author not found");
+            }
+            existingBook.setAuthors(authorSet);
         }
         if(bookRequest.getTitle()!=null)
         {
             existingBook.setTitle(bookRequest.getTitle());
+        }
+        if(bookRequest.getGenre()!=null)
+        {
+            existingBook.setGenre(bookRequest.getGenre());
         }
         if(bookRequest.getDescription()!=null)
         {
@@ -267,21 +269,31 @@ public class BookServiceImpl implements BookService{
         {
             existingBook.setQuantity(bookRequest.getQuantity());
         }
-
+        if(bookRequest.getImageUrl()!=null)
+        {
+            existingBook.setImageUrl(bookRequest.getImageUrl());
+        }
         Book savedBook=bookRepository.save(existingBook);
         if(savedBook==null)
         {
             throw new DataPersistenceException("Failed to update book");
         }
+
+        Set<String> authors=authorSet.stream()
+                .map(Author::getName)
+                .collect(Collectors.toSet());
+
         return BookResponseDTO.builder()
-                        .id(savedBook.getId())
-                        .title(savedBook.getTitle())
-                        .author(savedBook.getAuthor())
-                        .isbn(savedBook.getIsbn())
-                        .description(savedBook.getDescription())
-                        .price(savedBook.getPrice())
-                        .quantity(savedBook.getQuantity())
-                        .build();
+                .id(savedBook.getId())
+                .title(savedBook.getTitle())
+                .authors(authors)
+                .genre(savedBook.getGenre())
+                .isbn(savedBook.getIsbn())
+                .description(savedBook.getDescription())
+                .price(savedBook.getPrice())
+                .quantity(savedBook.getQuantity())
+                .imageUrl(savedBook.getImageUrl())
+                .build();
     }
 
     @Override
