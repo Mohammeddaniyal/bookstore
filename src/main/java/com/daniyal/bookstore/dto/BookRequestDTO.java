@@ -14,15 +14,14 @@ public class BookRequestDTO {
     @NotBlank(message="Title is required")
     private String title;
 
-    @NotNull(message = "Author Ids are required.")
-    @Size(min=1,message="Atleast One Author id is required")
+    @NotEmpty(message = "Author IDs are required.")
     private Set<Long> authorIds;
     @NotBlank(message = "Genre is required")
     private String genre;
 
-    @NotBlank(message="ISBN s required")
+    @NotBlank(message="ISBN is required")
     private String isbn;
-
+    @Size(max=500, message = "Description can't be more than 500 characters")
     private String description;
     @NotNull(message = "Price is required")
     @Positive(message="Price must be greater than zero")
