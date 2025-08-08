@@ -4,12 +4,10 @@ import com.daniyal.bookstore.dto.LoginRequestDTO;
 import com.daniyal.bookstore.entity.User;
 import com.daniyal.bookstore.exceptions.InvalidCredentialsException;
 import com.daniyal.bookstore.exceptions.UserAlreadyExistsException;
-import com.daniyal.bookstore.exceptions.UserNotExistsException;
 import com.daniyal.bookstore.repository.UserRepository;
 import com.daniyal.bookstore.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
