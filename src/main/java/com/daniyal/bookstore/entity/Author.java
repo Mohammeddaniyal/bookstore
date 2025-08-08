@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.web.WebProperties;
 import java.util.Set;
 
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
