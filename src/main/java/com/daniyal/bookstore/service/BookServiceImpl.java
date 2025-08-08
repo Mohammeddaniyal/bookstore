@@ -259,7 +259,7 @@ public class BookServiceImpl implements BookService{
 
         Book existingBook=optionalBook.get();
 
-        Set<Author> authorSet= Collections.emptySet();
+        Set<Author> authorSet;
 
         // duplicacy check
 
