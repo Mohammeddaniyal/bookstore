@@ -1,6 +1,9 @@
 package com.daniyal.bookstore;
 
 import com.daniyal.bookstore.exceptions.*;
+import jakarta.persistence.PersistenceException;
+import org.hibernate.HibernateException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -70,11 +73,11 @@ public class GlobalExceptionHandler {
                 .errors(new HashMap<>())
                 .build(),HttpStatus.NOT_FOUND);
     }
-    @ExceptionHandler(DataPersistenceException.class)
-    public ResponseEntity<ApiErrorResponse> handleDataPersistenceException(DataPersistenceException exception)
+    @ExceptionHandler({DataAccessException.class, PersistenceException.class, HibernateException.class})
+    public ResponseEntity<ApiErrorResponse> handleDataPersistenceException(Exception exception)
     {
         return new ResponseEntity<>(ApiErrorResponse.builder()
-                .message(exception.getMessage())
+                .message("A data persistence exception occured")
                 .errorCode("DATA_PERSISTENCE_ERROR")
                 .errors(new HashMap<>())
                 .build(),HttpStatus.INTERNAL_SERVER_ERROR);
