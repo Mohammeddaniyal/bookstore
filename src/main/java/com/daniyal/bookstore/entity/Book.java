@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,7 +22,14 @@ public class Book {
     private String  title;
     //private String author;
     @ManyToMany
-    private Set<Author> authors;
+    @JoinTable(
+            name="book_author",
+            joinColumns=@JoinColumn(name="book_id"),
+            inverseJoinColumns = @JoinColumn(name="author_id")
+            )
+    private Set<Author> authors=new HashSet<>();
+
+    private String genre;
 
     @Column(unique=true)
     private String isbn;
