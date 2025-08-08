@@ -100,14 +100,21 @@ public class BookServiceImpl implements BookService{
 
         Book dbBook=optionalBook.get();
 
+        Set<Author> authorSet=dbBook.getAuthors();
+        Set<String> authors=authorSet.stream()
+                .map(Author::getName)
+                .collect(Collectors.toSet());
+
         return BookResponseDTO.builder()
                 .id(dbBook.getId())
                 .title(dbBook.getTitle())
-                .author(dbBook.getAuthor())
+                .authors(authors)
+                .genre(dbBook.getGenre())
                 .isbn(dbBook.getIsbn())
                 .description(dbBook.getDescription())
                 .price(dbBook.getPrice())
                 .quantity(dbBook.getQuantity())
+                .imageUrl(dbBook.getImageUrl())
                 .build();
     }
 
@@ -117,12 +124,18 @@ public class BookServiceImpl implements BookService{
         return books.stream()
                 .map(book -> BookResponseDTO.builder()
                         .id(book.getId())
-                        .author(book.getAuthor())
+                        .authors(
+                                book.getAuthors().stream()
+                                        .map(Author::getName)
+                                        .collect(Collectors.toSet())
+                        )
                         .title(book.getTitle())
                         .description(book.getDescription())
                         .price(book.getPrice())
                         .quantity(book.getQuantity())
                         .isbn(book.getIsbn())
+                        .genre(book.getGenre())
+                        .imageUrl(book.getImageUrl())
                         .build())
                 .collect(Collectors.toList());
     }
