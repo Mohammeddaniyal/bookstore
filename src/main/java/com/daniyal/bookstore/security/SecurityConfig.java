@@ -50,7 +50,7 @@ public class SecurityConfig {
                 // Configure endpoint authorization rules
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/users/register", "/api/users/login").permitAll()
-                        .requestMatchers("/api/books/**").hasRole("ADMIN")
+                        .requestMatchers("/api/books/**","/api/authors/**").hasRole("ADMIN")
                         .requestMatchers("/api/orders/**").hasAnyRole("ADMIN", "CUSTOMER")
                         .anyRequest().authenticated()
                 )
