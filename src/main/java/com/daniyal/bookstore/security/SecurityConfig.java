@@ -1,5 +1,7 @@
 package com.daniyal.bookstore.security;
 
+import com.daniyal.bookstore.security.handlers.CustomAccessDeniedHandler;
+import com.daniyal.bookstore.security.handlers.CustomAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +24,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    @Autowired
     private  UserDetailsService customUserDetailsService;
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
@@ -42,6 +49,7 @@ public class SecurityConfig {
     // This bean defines the security filter chain with all your rules
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 // Disable CSRF protection (needed for stateless JWT APIs)
                 .csrf(csrf -> csrf.disable())
@@ -54,6 +62,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/orders/**").hasAnyRole("ADMIN", "CUSTOMER")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                                .accessDeniedHandler(customAccessDeniedHandler)
+                        )
                 // Set your custom UserDetailsService and password encoder (for authentication)
                 .userDetailsService(customUserDetailsService)
                 // Add your JWT filter before Spring Security's UsernamePasswordAuthenticationFilter
