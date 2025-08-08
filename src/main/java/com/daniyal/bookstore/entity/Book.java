@@ -5,9 +5,9 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
-@Setter
-@Getter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,7 +19,10 @@ public class Book {
     private Long id;
 
     private String  title;
-    private String author;
+    //private String author;
+    @ManyToMany
+    private Set<Author> authors;
+
     @Column(unique=true)
     private String isbn;
 
@@ -29,5 +32,6 @@ public class Book {
 
     @OneToMany(mappedBy = "book")
     private List<OrderItem> orderItems;
+
 
 }
