@@ -40,6 +40,22 @@ public class BookServiceImpl implements BookService{
         Set<Long> authorIdsRequest=bookRequest.getAuthorIds();
         for(Book existingBook:existingBooks)
         {
+            /*
+             * Defensive copy of the authors Set is created here to prevent ConcurrentModificationException.
+             *
+             * This exception occurs because Hibernate uses its own implementation (PersistentSet) for
+             * managing lazy-loaded collections. While the collection is being initialized or synchronized,
+             * Hibernate may internally modify the PersistentSet (e.g., during flushing or loading phases).
+             *
+             * Iterating directly over this PersistentSet during these internal modifications can cause
+             * a ConcurrentModificationException, as the collection is structurally changed while iterating.
+             *
+             * By creating a new HashSet copy, we iterate over a stable, independent snapshot of the authors,
+             * ensuring that any internal Hibernate modifications do not affect our iteration.
+             *
+             * This approach prevents runtime exceptions without affecting the underlying database or entity state.
+             * It is a common and safe pattern when working with Hibernate lazy-loaded collections.
+             */
             Set<Author> authorSafeCopy=new HashSet<>(existingBook.getAuthors());
             Set<Long> authorIdsDB=authorSafeCopy
                     .stream()
