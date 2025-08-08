@@ -1,21 +1,25 @@
 package com.daniyal.bookstore.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.URL;
 
 import java.math.BigDecimal;
-@Getter
-@Setter
+import java.util.Set;
+
+@Data
 public class BookRequestDTO {
     @NotBlank(message="Title is required")
     private String title;
-    @NotBlank(message="Author is required")
-    private String author;
+
+    @NotNull(message = "Author Ids are required.")
+    @Size(min=1,message="Atleast One Author id is required")
+    private Set<Long> authorIds;
+    @NotBlank(message = "Genre is required")
+    private String genre;
+
     @NotBlank(message="ISBN s required")
     private String isbn;
 
@@ -25,4 +29,6 @@ public class BookRequestDTO {
     private BigDecimal price;
     @Min(value = 0,message="Quanitity cannot be negative")
     private int quantity;
+    @URL
+    private String imageUrl;
 }
