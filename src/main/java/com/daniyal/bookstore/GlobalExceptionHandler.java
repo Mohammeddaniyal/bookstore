@@ -1,5 +1,6 @@
 package com.daniyal.bookstore;
 
+import com.daniyal.bookstore.entity.Author;
 import com.daniyal.bookstore.exceptions.*;
 import jakarta.persistence.PersistenceException;
 import org.hibernate.HibernateException;
@@ -100,5 +101,13 @@ public class GlobalExceptionHandler {
                 .errors(new HashMap<>())
                 .build(),HttpStatus.CONFLICT);
     }
-
+    @ExceptionHandler(AuthorNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthorNotFoundException(AuthorNotFoundException exception)
+    {
+        return new ResponseEntity<>(ApiErrorResponse.builder()
+                .message(exception.getMessage())
+                .errorCode("AUTHOR_NOT_FOUND")
+                .errors(new HashMap<>())
+                .build(),HttpStatus.NOT_FOUND);
+    }
 }
