@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -13,9 +14,11 @@ import java.math.BigDecimal;
 public class BookResponseDTO {
     private Long id;
     private String title;
-    private String author;
+    private Set<String> authors;
+    private String genre;
     private String isbn;
     private String description;
     private BigDecimal price;
     private int quantity;
+    private String imageUrl;
 }
