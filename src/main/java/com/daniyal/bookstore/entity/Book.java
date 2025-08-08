@@ -8,7 +8,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Data
+
+@Setter
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,12 +23,13 @@ public class Book {
 
     private String  title;
     //private String author;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name="book_author",
             joinColumns=@JoinColumn(name="book_id"),
             inverseJoinColumns = @JoinColumn(name="author_id")
             )
+    @Builder.Default
     private Set<Author> authors=new HashSet<>();
 
     private String genre;
