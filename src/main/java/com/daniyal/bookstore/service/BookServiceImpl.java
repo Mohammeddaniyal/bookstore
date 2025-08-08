@@ -162,6 +162,8 @@ public class BookServiceImpl implements BookService{
                         .price(book.getPrice())
                         .quantity(book.getQuantity())
                         .isbn(book.getIsbn())
+                        .genre(book.getGenre())
+                        .imageUrl(book.getImageUrl())
                         .build());
     }
 
