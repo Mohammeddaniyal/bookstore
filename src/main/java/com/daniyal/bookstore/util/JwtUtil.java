@@ -11,6 +11,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class JwtUtil {
@@ -23,12 +24,14 @@ public class JwtUtil {
     @PostConstruct
     public void init() {
         // Generate a secure random key. In production, use a fixed secret key loaded securely!
+        // In production, load a secret from a config file or environment variable!
         this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
     // Generate token including email & roles in claims
-    public String generateToken(String email, List<String> roles) {
-        Map<String, Object> claims = Map.of("roles", roles);
+    // Generate token - roles as list for JSON arrays
+    public String generateToken(String email, Set<String> roles) {
+        Map<String, Object> claims = Map.of("roles", List.copyOf(roles));
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(email)
