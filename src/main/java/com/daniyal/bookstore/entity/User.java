@@ -4,7 +4,9 @@ package com.daniyal.bookstore.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -25,7 +27,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles;
+    private Set<String> roles;
 
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
