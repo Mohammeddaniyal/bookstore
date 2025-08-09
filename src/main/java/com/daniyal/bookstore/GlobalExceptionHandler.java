@@ -201,4 +201,13 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
+    @ExceptionHandler(NegativeArraySizeException.class)
+    public ResponseEntity<ApiErrorResponse> handleNegativeArraySizeException(NegativeArraySizeException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("MALFORMED_TOKEN")
+                .message("JWT token is malformed or improperly encoded")
+                .errors(Collections.emptyMap())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
 }
