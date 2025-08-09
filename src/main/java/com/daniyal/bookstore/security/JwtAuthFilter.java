@@ -57,13 +57,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 // Continue with Spring Security context setup here
                 // e.g. load user, set authentication in SecurityContextHolder
 
+            }catch (NegativeArraySizeException exception)
+            {
+                handlerExceptionResolver.resolveException(request, response, null, exception);
+                return; // Stop filter chain here, response handled above
             } catch (ExpiredJwtException | MalformedJwtException | SignatureException
                      | UnsupportedJwtException | IllegalArgumentException ex) {
                 // Delegate JWT exceptions to HandlerExceptionResolver
                 handlerExceptionResolver.resolveException(request, response, null, ex);
                 return; // Stop filter chain here, response handled above
-            }catch(Exception exception)
+            }catch (Exception exception)
             {
+                handlerExceptionResolver.resolveException(request, response, null, exception);
+                return;
             }
         }
 
