@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService{
         {
             throw new UserAlreadyExistsException(errorMap);
         }
-        user.setRoles(Arrays.asList("CUSTOMER"));
+        user.setRoles(Set.of("CUSTOMER"));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
