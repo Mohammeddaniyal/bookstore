@@ -3,6 +3,7 @@ package com.daniyal.bookstore.dto;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -13,5 +14,5 @@ public class UserResponseDTO {
     private Long id;
     private String username;
     private String email;
-    private List<String> roles;
+    private Set<String> roles;
 }
