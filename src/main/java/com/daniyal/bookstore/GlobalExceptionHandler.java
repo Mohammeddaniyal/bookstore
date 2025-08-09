@@ -5,6 +5,7 @@ import com.daniyal.bookstore.exceptions.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.persistence.PersistenceException;
 import org.hibernate.HibernateException;
@@ -223,6 +224,10 @@ public class GlobalExceptionHandler {
                 message = "JWT token is malformed or improperly encoded";
             }
 
+            System.out.println("Exception class: " + ex.getClass().getName());
+
+            System.out.println("Exception class (simple): " + ex.getClass().getSimpleName());
+
             ApiErrorResponse error = ApiErrorResponse.builder()
                     .errorCode(errorCode)
                     .message(message)
@@ -236,6 +241,16 @@ public class GlobalExceptionHandler {
 
             return new ResponseEntity<>(error, status);
         }
+
+    @ExceptionHandler(DecodingException.class)
+    public ResponseEntity<ApiErrorResponse> handleDecodingException(DecodingException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("MALFORMED_TOKEN")
+                .message("JWT token is malformed or improperly encoded")
+                .errors(Collections.emptyMap())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
 
 
 }
