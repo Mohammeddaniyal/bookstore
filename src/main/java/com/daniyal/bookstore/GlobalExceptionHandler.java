@@ -210,4 +210,32 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
+
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex) {
+
+            String errorCode = "INTERNAL_ERROR";
+            String message = "An unexpected error occurred";
+
+            // Special case: handle NegativeArraySizeException inside
+            if (ex instanceof NegativeArraySizeException) {
+                errorCode = "MALFORMED_TOKEN";
+                message = "JWT token is malformed or improperly encoded";
+            }
+
+            ApiErrorResponse error = ApiErrorResponse.builder()
+                    .errorCode(errorCode)
+                    .message(message)
+                    .errors(Collections.emptyMap())
+                    .build();
+
+            // JWT/security related cases should return 401 instead:
+            HttpStatus status = (ex instanceof NegativeArraySizeException)
+                    ? HttpStatus.UNAUTHORIZED
+                    : HttpStatus.INTERNAL_SERVER_ERROR;
+
+            return new ResponseEntity<>(error, status);
+        }
+
+
 }
