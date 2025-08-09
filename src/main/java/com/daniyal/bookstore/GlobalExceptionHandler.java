@@ -2,6 +2,10 @@ package com.daniyal.bookstore;
 
 import com.daniyal.bookstore.entity.Author;
 import com.daniyal.bookstore.exceptions.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.persistence.PersistenceException;
 import org.hibernate.HibernateException;
 import org.hibernate.TypeMismatchException;
@@ -9,6 +13,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -155,4 +161,44 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ApiErrorResponse> handleExpiredJwt(ExpiredJwtException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("TOKEN_EXPIRED")
+                .message("JWT token has expired")
+                .errors(Collections.emptyMap())
+                .build();
+
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<ApiErrorResponse> handleSignatureException(SignatureException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("INVALID_TOKEN_SIGNATURE")
+                .message("JWT token signature is invalid")
+                .errors(Collections.emptyMap())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(MalformedJwtException.class)
+    public ResponseEntity<ApiErrorResponse> handleMalformedJwtException(MalformedJwtException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("MALFORMED_TOKEN")
+                .message("JWT token is malformed")
+                .errors(Collections.emptyMap())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UnsupportedJwtException.class)
+    public ResponseEntity<ApiErrorResponse> handleUnsupportedJwtException(UnsupportedJwtException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("UNSUPPORTED_TOKEN")
+                .message("JWT token is unsupported")
+                .errors(Collections.emptyMap())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
 }
