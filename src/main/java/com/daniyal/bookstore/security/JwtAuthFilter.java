@@ -4,6 +4,7 @@ import com.daniyal.bookstore.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -62,7 +63,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 handlerExceptionResolver.resolveException(request, response, null, exception);
                 return; // Stop filter chain here, response handled above
             } catch (ExpiredJwtException | MalformedJwtException | SignatureException
-                     | UnsupportedJwtException | IllegalArgumentException ex) {
+                     | UnsupportedJwtException | IllegalArgumentException | DecodingException ex) {
                 // Delegate JWT exceptions to HandlerExceptionResolver
                 handlerExceptionResolver.resolveException(request, response, null, ex);
                 return; // Stop filter chain here, response handled above
