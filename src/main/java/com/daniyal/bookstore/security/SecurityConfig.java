@@ -17,11 +17,24 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity  // Enables @PreAuthorize and similar method-level security annotations
 public class SecurityConfig {
+
+    @Autowired
+    private HandlerExceptionResolver handlerExceptionResolver;  // Inject handler resolver
+
+    // Remove field injection of jwtAuthFilter; instantiate manually below
+
+    @Bean
+    public JwtAuthFilter jwtAuthFilter() {
+        // Pass handlerExceptionResolver into JwtAuthFilter constructor
+        return new JwtAuthFilter(handlerExceptionResolver);
+    }
+
 
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -30,8 +43,7 @@ public class SecurityConfig {
 
     @Autowired
     private  UserDetailsService customUserDetailsService;
-    @Autowired
-    private JwtAuthFilter jwtAuthFilter;
+
 
     // Password encoder bean for hashing passwords
     @Bean
@@ -69,7 +81,7 @@ public class SecurityConfig {
                 // Set your custom UserDetailsService and password encoder (for authentication)
                 .userDetailsService(customUserDetailsService)
                 // Add your JWT filter before Spring Security's UsernamePasswordAuthenticationFilter
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
