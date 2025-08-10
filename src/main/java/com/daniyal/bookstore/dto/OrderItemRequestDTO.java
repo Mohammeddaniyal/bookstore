@@ -3,12 +3,14 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Setter
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderItemDTO {
+public class OrderItemRequestDTO {
 
         @NotNull(message = "Book ID cannot be null")
         private Long bookId;
