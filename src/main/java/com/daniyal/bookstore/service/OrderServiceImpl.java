@@ -9,9 +9,7 @@ import com.daniyal.bookstore.entity.Order;
 import com.daniyal.bookstore.entity.OrderItem;
 import com.daniyal.bookstore.entity.User;
 import com.daniyal.bookstore.enums.OrderStatus;
-import com.daniyal.bookstore.exceptions.BookNotFoundException;
-import com.daniyal.bookstore.exceptions.OrderOutOfStockException;
-import com.daniyal.bookstore.exceptions.UserNotFoundException;
+import com.daniyal.bookstore.exceptions.*;
 import com.daniyal.bookstore.repository.BookRepository;
 import com.daniyal.bookstore.repository.OrderRepository;
 import com.daniyal.bookstore.repository.UserRepository;
@@ -85,9 +83,19 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+
     @Override
-    public OrderResponseDTO getOrderById(Long orderId, String username, boolean isAdmin) {
-        return null;
+    @Transactional
+    public OrderResponseDTO getOrderById(Long orderId, String email, boolean isAdmin) {
+        User user=userRepository.findByEmail(email)
+                .orElseThrow(()->(new UserNotFoundException("User not found")));
+        if(!isAdmin && !user.getEmail().equals(email))
+        {
+            throw new AccessDeniedException("Access denied to order id : "+orderId);
+        }
+        Order order= orderRepository.findById(orderId)
+                .orElseThrow(()->(new OrderNotFoundException("Order not found")));
+        return toOrderResponseDTO(order);
     }
 
     @Override
