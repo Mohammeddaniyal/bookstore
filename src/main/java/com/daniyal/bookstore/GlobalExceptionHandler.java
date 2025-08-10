@@ -212,36 +212,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
-        @ExceptionHandler(Exception.class)
-        public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex) {
-
-            String errorCode = "INTERNAL_ERROR";
-            String message = "An unexpected error occurred";
-
-            // Special case: handle NegativeArraySizeException inside
-            if (ex instanceof NegativeArraySizeException) {
-                errorCode = "MALFORMED_TOKEN";
-                message = "JWT token is malformed or improperly encoded";
-            }
-
-            System.out.println("Exception class: " + ex.getClass().getName());
-
-            System.out.println("Exception class (simple): " + ex.getClass().getSimpleName());
-
-            ApiErrorResponse error = ApiErrorResponse.builder()
-                    .errorCode(errorCode)
-                    .message(message)
-                    .errors(Collections.emptyMap())
-                    .build();
-
-            // JWT/security related cases should return 401 instead:
-            HttpStatus status = (ex instanceof NegativeArraySizeException)
-                    ? HttpStatus.UNAUTHORIZED
-                    : HttpStatus.INTERNAL_SERVER_ERROR;
-
-            return new ResponseEntity<>(error, status);
-        }
-
     @ExceptionHandler(DecodingException.class)
     public ResponseEntity<ApiErrorResponse> handleDecodingException(DecodingException ex) {
         ApiErrorResponse error = ApiErrorResponse.builder()
@@ -251,6 +221,49 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(OrderOutOfStockException.class)
+    public ResponseEntity<ApiErrorResponse> handleOrderOutOfStockException(OrderOutOfStockException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("ORDER_OUT_OF_STOCK")
+                .message(ex.getMessage())
+                .errors(Collections.emptyMap())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+
+
+//        @ExceptionHandler(Exception.class)
+//        public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex) {
+//
+//            String errorCode = "INTERNAL_ERROR";
+//            String message = "An unexpected error occurred";
+//
+//            // Special case: handle NegativeArraySizeException inside
+//            if (ex instanceof NegativeArraySizeException) {
+//                errorCode = "MALFORMED_TOKEN";
+//                message = "JWT token is malformed or improperly encoded";
+//            }
+//
+//            System.out.println("Exception class: " + ex.getClass().getName());
+//
+//            System.out.println("Exception class (simple): " + ex.getClass().getSimpleName());
+//
+//            ApiErrorResponse error = ApiErrorResponse.builder()
+//                    .errorCode(errorCode)
+//                    .message(message)
+//                    .errors(Collections.emptyMap())
+//                    .build();
+//
+//            // JWT/security related cases should return 401 instead:
+//            HttpStatus status = (ex instanceof NegativeArraySizeException)
+//                    ? HttpStatus.UNAUTHORIZED
+//                    : HttpStatus.INTERNAL_SERVER_ERROR;
+//
+//            return new ResponseEntity<>(error, status);
+//        }
+
 
 
 }
