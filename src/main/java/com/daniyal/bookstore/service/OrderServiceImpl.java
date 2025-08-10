@@ -87,14 +87,16 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponseDTO getOrderById(Long orderId, String email, boolean isAdmin) {
-        User user=userRepository.findByEmail(email)
-                .orElseThrow(()->(new UserNotFoundException("User not found")));
-        if(!isAdmin && !user.getEmail().equals(email))
-        {
-            throw new AccessDeniedException("Access denied to order id : "+orderId);
-        }
         Order order= orderRepository.findById(orderId)
                 .orElseThrow(()->(new OrderNotFoundException("Order not found")));
+
+        if(!isAdmin && !order.getUser().getEmail().equals(email))
+        {
+            // Security decision: For non-admin users, treat orders they don’t own as "not found" (404)
+            // to prevent leaking the existence of other users’ orders.
+            throw new OrderNotFoundException("Order not found");
+        }
+
         return toOrderResponseDTO(order);
     }
 
