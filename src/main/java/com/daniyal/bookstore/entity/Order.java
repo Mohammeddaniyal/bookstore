@@ -21,17 +21,34 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="user_id")
     private User user;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
     @OneToMany(mappedBy = "order",cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<OrderItem> items=new ArrayList<>();
+    private List<OrderItem> orderItems=new ArrayList<>();
 
     private BigDecimal totalAmount;
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 
+    // there are three ways to assign date
+    // 1 handle manually in service class
+    // 2 Using @PrePersist and @PreUpdate
+    // 3 Using jpa auditing, checkout docs/day8/jpa-auditing-vs-prepersist.md
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
 }
