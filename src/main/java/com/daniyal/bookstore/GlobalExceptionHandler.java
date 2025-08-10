@@ -232,6 +232,25 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleOrderNotFoundException(OrderNotFoundException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("ORDER_NOT_FOUND")
+                .message(ex.getMessage())
+                .errors(Collections.emptyMap())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("ACCESS_DENIED_EXCEPTION")
+                .message(ex.getMessage())
+                .errors(Collections.emptyMap())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
 
 
 //        @ExceptionHandler(Exception.class)
