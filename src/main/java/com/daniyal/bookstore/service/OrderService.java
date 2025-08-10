@@ -7,11 +7,11 @@ import com.daniyal.bookstore.enums.OrderStatus;
 import java.util.List;
 
 public interface OrderService {
-    OrderResponseDTO placeOrder(OrderRequestDTO dto, String username);
-    OrderResponseDTO getOrderById(Long orderId, String username, boolean isAdmin);
-    List<OrderResponseDTO> listOrdersForUser(String username);
+    OrderResponseDTO placeOrder(OrderRequestDTO dto, String email);
+    OrderResponseDTO getOrderById(Long orderId, String email, boolean isAdmin);
+    List<OrderResponseDTO> listOrdersForUser(String email);
     List<OrderResponseDTO> listAllOrders();
-    void cancelOrder(Long orderId, String username, boolean isAdmin);
+    void cancelOrder(Long orderId, String email, boolean isAdmin);
     void updateOrderStatus(Long orderId, OrderStatus status);
 }
 
