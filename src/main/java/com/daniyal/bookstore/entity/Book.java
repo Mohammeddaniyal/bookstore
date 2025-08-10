@@ -1,5 +1,6 @@
 package com.daniyal.bookstore.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,6 +43,7 @@ public class Book {
     private int quantity;
     private String imageUrl;
     @OneToMany(mappedBy = "book")
+    @JsonIgnore // checkout day 8 json-serilizatio-issue.md why this is necessary but currently not ir my case
     private List<OrderItem> orderItems;
 
 
