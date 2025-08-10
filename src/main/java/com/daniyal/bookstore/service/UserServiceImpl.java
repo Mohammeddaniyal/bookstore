@@ -1,6 +1,7 @@
 package com.daniyal.bookstore.service;
 
 import com.daniyal.bookstore.dto.LoginRequestDTO;
+import com.daniyal.bookstore.dto.UserResponseDTO;
 import com.daniyal.bookstore.entity.User;
 import com.daniyal.bookstore.exceptions.InvalidCredentialsException;
 import com.daniyal.bookstore.exceptions.UserAlreadyExistsException;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -56,8 +58,16 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(user -> UserResponseDTO.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .email(user.getEmail())
+                        .roles(user.getRoles())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override
