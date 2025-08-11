@@ -14,5 +14,11 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
             "JOIN FETCH o.orderItems oi" +
             "JOIN FETCH oi.book WHERE o.id=:orderId")
     Optional<Order> findByIdWithItemsAndBooks(@Param("orderId")Long Id);
+    @Query("SELECT DISTINCT o FROM Order o" +
+            "JOIN FETCH o.orderItems oi" +
+            "JOIN FETCH oi.book" +
+            "WHERE o.user.email=:email" +
+            "ORDER BY o.createdAt DESC")
+    public List<Order> findAllByUserEmailWithItemsAndBooks(@Param("email") String email);
 
 }
