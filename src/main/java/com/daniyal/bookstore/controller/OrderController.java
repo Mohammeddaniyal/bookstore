@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
@@ -36,5 +38,9 @@ public class OrderController {
         return new ResponseEntity<>(orderService.getOrderById(id,email,isAdmin),HttpStatus.FOUND);
     }
 
-
+    @GetMapping("/my")
+    public ResponseEntity<List<OrderResponseDTO>> getAllMyOrders()
+    {
+        return ResponseEntity.ok(orderService.listAllOrders());
+    }
 }
