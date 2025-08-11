@@ -130,8 +130,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> listOrdersForUser(String email) {
-        List<Order> orders=orderRepository.findAllByUserEmailWithItemsAndBooks(email);
+    @Transactional
+    public List<OrderResponseDTO> listOrdersForUser(String targetEmail,String loggedInEmail,boolean isAdmin) {
+        /*
+         Service method to fetch all orders for a given user.
+ - If caller is ADMIN, can view orders for any specified email.
+ - If caller is not an admin, they can only view orders for their own email.
+ - Uses a repository method with JOIN FETCH to load OrderItems and Books in one query,
+   avoiding the N+1 select problem.
+ - Throws no explicit access-denied error here because email filtering via parameters
+   already ensures correct ownership visibility.
+        */
+        String emailToQuery=isAdmin?targetEmail:loggedInEmail;
+        List<Order> orders=orderRepository.findAllByUserEmailWithItemsAndBooks(emailToQuery);
         return orders.stream()
                 .map(this::toOrderResponseDTO)
                 .toList();
