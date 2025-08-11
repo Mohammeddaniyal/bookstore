@@ -53,9 +53,9 @@ public class OrderController {
         return ResponseEntity.ok(orderService.listOrdersForUser(email, email, false));
     }
 
-    @GetMapping("/user/{email}")
+    @GetMapping("/user")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<List<OrderResponseDTO>> getOrderForUser(@PathVariable String email, Authentication authentication) {
+    public ResponseEntity<List<OrderResponseDTO>> getOrderForUser(@RequestParam String email, Authentication authentication) {
         /*
          Controller endpoint for ADMIN to fetch orders for a specific user by email.
  - Requires ADMIN authority (@PreAuthorize ensures only admins can reach here).
