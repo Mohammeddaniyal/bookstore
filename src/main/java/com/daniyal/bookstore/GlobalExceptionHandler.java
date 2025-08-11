@@ -242,6 +242,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(OrderCancellationException.class)
+    public ResponseEntity<ApiErrorResponse> handleOrderCancellationException(OrderCancellationException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("ORDER_CANNOT_BE_CANCELLED")
+                .message(ex.getMessage())
+                .errors(Collections.emptyMap())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
         ApiErrorResponse error = ApiErrorResponse.builder()
