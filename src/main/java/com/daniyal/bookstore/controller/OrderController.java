@@ -81,7 +81,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.listAllOrders());
     }
 
-    @PostMapping("/{orderId}/cancel/")
+    @PostMapping("/{orderId}/cancel")
     public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId, Authentication authentication) {
         // Any user can cancel their own pending orders; admin can cancel any
         /*
