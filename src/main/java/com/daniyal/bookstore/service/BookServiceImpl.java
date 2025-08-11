@@ -48,7 +48,6 @@ public class BookServiceImpl implements BookService{
             //Hibernate.initialize(existingBook.getAuthors());
             //Set<Author> authorSafeCopy=new HashSet<>(existingBook.getAuthors());
             Set<Author> authorSafeCopy=existingBook.getAuthors();
-            System.out.println("Authors loaded: " + existingBook.getAuthors().size());
             Set<Long> authorIdsDB=authorSafeCopy
                     .stream()
                     .map(Author::getId)
