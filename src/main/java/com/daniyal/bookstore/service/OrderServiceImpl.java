@@ -21,6 +21,8 @@ import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,10 +44,16 @@ public class OrderServiceImpl implements OrderService {
         User user=userRepository.findByEmail(email).
                 orElseThrow(()-> new UserNotFoundException("User not found"));
 
+        // fetch all book ID's from order request all at once
         List<Long> bookIds=orderRequest.getOrderItems().stream()
                 .map(OrderItemRequestDTO::getBookId)
                 .collect(Collectors.toList());
 
+        // Single query to fetch all all books
+        List<Book> books=bookRepository.findAllById(bookIds);
+
+        Map<Long,Book> bookMap=books.stream()
+                .collect(Collectors.toMap(Book::getId, Function.identity()));
 
         // prepare OrderItem, validate each book and quantity
         List<OrderItem> orderItems=new ArrayList<>();
@@ -53,9 +61,11 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItemRequestDTO> requestOrderItems=orderRequest.getOrderItems();
         for(OrderItemRequestDTO requestOrderItem:requestOrderItems)
         {
-            Book book=bookRepository.findById(requestOrderItem.getBookId())
-                            .orElseThrow(()-> new BookNotFoundException("Book not found "+requestOrderItem.getBookId()));
 
+            Book book=bookMap.get(requestOrderItem.getBookId());
+            if(book==null) {
+                throw new BookNotFoundException("Book not found with id " + requestOrderItem.getBookId());
+            }
             if(book.getQuantity()<requestOrderItem.getQuantity())
             {
                 throw new OrderOutOfStockException("Not enough stock for book : "+book.getTitle());
