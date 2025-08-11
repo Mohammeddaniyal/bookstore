@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.http.ResponseEntity.ok;
+
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
@@ -52,8 +54,8 @@ public class OrderController {
         String email= authentication.getName();
         return ResponseEntity.ok(orderService.listOrdersForUser(email,email,false));
     }
-    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/user/{email}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<OrderResponseDTO>> getOrderForUser(@PathVariable String email, Authentication authentication)
     {
         /*
@@ -68,4 +70,19 @@ public class OrderController {
         return ResponseEntity.ok(orderService.listOrdersForUser(email, authentication.getName(), isAdmin));
 
     }
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN")
+    public ResponseEntity<List<OrderResponseDTO>> getAllOrders()
+    {
+        /*
+         Controller endpoint to fetch all orders in the system.
+ - Accessible only to ADMIN users (secured via @PreAuthorize).
+ - Delegates to service layer for fetching with JOIN FETCH optimization.
+ - Returns list of OrderResponseDTO containing full order details.
+         */
+        return ResponseEntity.ok(orderService.listAllOrders());
+    }
+
+
 }
