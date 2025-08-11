@@ -21,4 +21,10 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
             "ORDER BY o.createdAt DESC")
     public List<Order> findAllByUserEmailWithItemsAndBooks(@Param("email") String email);
 
+    @Query("SELECT DISTINCT o FROM Order o" +
+            "JOIN FETCH o.orderItems oi" +
+            "JOIN FETCH oi.books" +
+            "ORDER BY o.createdAt DESC")
+    public List<Order> findAllWithItemsAndBooks();
+
 }
