@@ -99,9 +99,9 @@ public class OrderController {
     }
 
     @PatchMapping("/{orderId}/status")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     // ADMIN-only: update status of any order
-    public ResponseEntity<Void> updateOrderStatus(@PathVariable Long orderId, @RequestParam OrderStatus orderStatus) {
+    public ResponseEntity<Void> updateOrderStatus(@PathVariable Long orderId, @RequestParam("status") OrderStatus orderStatus) {
     /*
      ADMIN-only: Updates the status of an order (e.g., PENDING -> SHIPPED).
  - Access restricted via @PreAuthorize("hasAuthority('ADMIN')").
