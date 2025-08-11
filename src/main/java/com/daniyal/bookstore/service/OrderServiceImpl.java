@@ -177,7 +177,7 @@ public class OrderServiceImpl implements OrderService {
             book.setQuantity(book.getQuantity()+orderItem.getQuantity());
         });
     }
-
+    @Transactional
     @Override
     public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
         Order order=orderRepository.findByIdWithItemsAndBooks(orderId)
