@@ -8,6 +8,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.persistence.PersistenceException;
+import jakarta.servlet.ServletException;
 import org.hibernate.HibernateException;
 import org.hibernate.TypeMismatchException;
 import org.springframework.dao.DataAccessException;
@@ -15,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -254,15 +257,15 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
-        ApiErrorResponse error = ApiErrorResponse.builder()
-                .errorCode("ACCESS_DENIED_EXCEPTION")
-                .message(ex.getMessage())
-                .errors(Collections.emptyMap())
-                .build();
-        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
-    }
+//    @ExceptionHandler(AccessDeniedException.class)
+//    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+//        ApiErrorResponse error = ApiErrorResponse.builder()
+//                .errorCode("ACCESS_DENIED_EXCEPTION")
+//                .message(ex.getMessage())
+//                .errors(Collections.emptyMap())
+//                .build();
+//        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+//    }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleNoHandlerFound(NoHandlerFoundException ex) {
@@ -274,36 +277,53 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
-//        @ExceptionHandler(Exception.class)
-//        public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex) {
-//
-//            String errorCode = "INTERNAL_ERROR";
-//            String message = "An unexpected error occurred";
-//
-//            // Special case: handle NegativeArraySizeException inside
-//            if (ex instanceof NegativeArraySizeException) {
-//                errorCode = "MALFORMED_TOKEN";
-//                message = "JWT token is malformed or improperly encoded";
-//            }
-//
-//            System.out.println("Exception class: " + ex.getClass().getName());
-//
-//            System.out.println("Exception class (simple): " + ex.getClass().getSimpleName());
-//
-//            ApiErrorResponse error = ApiErrorResponse.builder()
-//                    .errorCode(errorCode)
-//                    .message(message)
-//                    .errors(Collections.emptyMap())
-//                    .build();
-//
-//            // JWT/security related cases should return 401 instead:
-//            HttpStatus status = (ex instanceof NegativeArraySizeException)
-//                    ? HttpStatus.UNAUTHORIZED
-//                    : HttpStatus.INTERNAL_SERVER_ERROR;
-//
-//            return new ResponseEntity<>(error, status);
-//        }
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthException(AuthenticationException ex) {
+        String errorCode = "ERR_AUTH_UNAUTHORIZED";
+        String message = "Authentication is required";
 
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode(errorCode)
+                .message(message)
+                .errors(new HashMap<>())
+                .build();
 
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("ERR_AUTH_FORBIDDEN")
+                .message("You do not have permission to access this resource")
+                .errors(new HashMap<>())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ServletException.class)
+    public ResponseEntity<ApiErrorResponse> handleServletException(ServletException ex) {
+        Throwable rootCause = ex.getRootCause();
+        if (rootCause instanceof AccessDeniedException) {
+            // Delegate to AccessDeniedException handler logic or duplicate response
+            return handleAccessDenied((AccessDeniedException) rootCause);
+        }
+
+        // General ServletException handling if different cause
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("ERR_SERVLET_EXCEPTION")
+                .message("A servlet error occurred: " + ex.getMessage())
+                .errors(new HashMap<>())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthorizationDenied(AuthorizationDeniedException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("ERR_AUTH_FORBIDDEN")
+                .message("You do not have permission to access this resource")
+                .errors(new HashMap<>())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
 }
