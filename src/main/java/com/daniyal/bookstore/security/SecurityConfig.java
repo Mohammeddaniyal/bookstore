@@ -21,7 +21,10 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity  // Enables @PreAuthorize and similar method-level security annotations
+@EnableMethodSecurity  /*  Enables @PreAuthorize and similar method-level security annotations
+ Enables method-level security annotations like @PreAuthorize and @PostAuthorize
+ so access rules can be applied directly on controller/service methods
+*/
 public class SecurityConfig {
 
     @Autowired
