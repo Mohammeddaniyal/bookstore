@@ -150,7 +150,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderResponseDTO> listAllOrders() {
-        return List.of();
+        return orderRepository.findAllWithItemsAndBooks().stream()
+                .map(this::toOrderResponseDTO)
+                .toList();
     }
 
     @Override
