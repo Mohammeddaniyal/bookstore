@@ -44,12 +44,20 @@ public class OrderServiceImpl implements OrderService {
         User user=userRepository.findByEmail(email).
                 orElseThrow(()-> new UserNotFoundException("User not found"));
 
+        /* ✅ Optimization:
+ Instead of calling bookRepository.findById(...) inside the loop for each order item
+ (which causes N separate SQL queries → N+1 problem),
+ we collect all required book IDs first and fetch them in a single query using findAllById().
+ This reduces database round-trips from O(N) to O(1) for book lookups,
+ making order placement significantly faster for orders with many items.
+*/
+
         // fetch all book ID's from order request all at once
         List<Long> bookIds=orderRequest.getOrderItems().stream()
                 .map(OrderItemRequestDTO::getBookId)
                 .collect(Collectors.toList());
 
-        // Single query to fetch all all books
+        // Single query to fetch all books
         List<Book> books=bookRepository.findAllById(bookIds);
 
         Map<Long,Book> bookMap=books.stream()
