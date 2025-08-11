@@ -10,21 +10,21 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order,Long> {
     public List<Order> findAllByUser_Username(String username);
-    @Query("SELECT o FROM Order o" +
-            "JOIN FETCH o.orderItems oi" +
+    @Query("SELECT o FROM Order o " +
+            "JOIN FETCH o.orderItems oi " +
             "JOIN FETCH oi.book WHERE o.id=:orderId")
     Optional<Order> findByIdWithItemsAndBooks(@Param("orderId")Long Id);
-    @Query("SELECT DISTINCT o FROM Order o" +
-            "JOIN FETCH o.orderItems oi" +
-            "JOIN FETCH oi.book" +
-            "WHERE o.user.email=:email" +
+    @Query("SELECT DISTINCT o FROM Order o " +
+            "JOIN FETCH o.orderItems oi " +
+            "JOIN FETCH oi.book " +
+            "WHERE o.user.email=:email " +
             "ORDER BY o.createdAt DESC")
-    public List<Order> findAllByUserEmailWithItemsAndBooks(@Param("email") String email);
+    List<Order> findAllByUserEmailWithItemsAndBooks(@Param("email") String email);
 
-    @Query("SELECT DISTINCT o FROM Order o" +
-            "JOIN FETCH o.orderItems oi" +
-            "JOIN FETCH oi.books" +
+    @Query("SELECT DISTINCT o FROM Order o " +
+            "JOIN FETCH o.orderItems oi " +
+            "JOIN FETCH oi.book " +
             "ORDER BY o.createdAt DESC")
-    public List<Order> findAllWithItemsAndBooks();
+   List<Order> findAllWithItemsAndBooks();
 
 }
