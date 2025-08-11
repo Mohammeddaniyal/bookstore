@@ -130,8 +130,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> listOrdersForUser(String username) {
-        return List.of();
+    public List<OrderResponseDTO> listOrdersForUser(String email) {
+        List<Order> orders=orderRepository.findAllByUserEmailWithItemsAndBooks(email);
+        return orders.stream()
+                .map(this::toOrderResponseDTO)
+                .toList();
     }
 
     @Override
