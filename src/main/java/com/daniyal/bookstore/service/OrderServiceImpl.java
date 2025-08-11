@@ -21,6 +21,8 @@ import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -39,6 +41,11 @@ public class OrderServiceImpl implements OrderService {
 
         User user=userRepository.findByEmail(email).
                 orElseThrow(()-> new UserNotFoundException("User not found"));
+
+        List<Long> bookIds=orderRequest.getOrderItems().stream()
+                .map(OrderItemRequestDTO::getBookId)
+                .collect(Collectors.toList());
+
 
         // prepare OrderItem, validate each book and quantity
         List<OrderItem> orderItems=new ArrayList<>();
