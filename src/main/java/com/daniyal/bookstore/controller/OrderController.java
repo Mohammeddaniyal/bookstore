@@ -37,7 +37,6 @@ public class OrderController {
         boolean isAdmin = authentication.getAuthorities()
                 .stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        System.out.println("Is admin : " + isAdmin+" Email "+email);
         return new ResponseEntity<>(orderService.getOrderById(id, email, isAdmin), HttpStatus.FOUND);
     }
 
@@ -55,7 +54,7 @@ public class OrderController {
     }
 
     @GetMapping("/user/{email}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<OrderResponseDTO>> getOrderForUser(@PathVariable String email, Authentication authentication) {
         /*
          Controller endpoint for ADMIN to fetch orders for a specific user by email.
@@ -65,13 +64,13 @@ public class OrderController {
  - Non-admins cannot access this endpoint (security handled at method level).
          */
         boolean isAdmin = authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ADMIN"));
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         return ResponseEntity.ok(orderService.listOrdersForUser(email, authentication.getName(), isAdmin));
 
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN")
     public ResponseEntity<List<OrderResponseDTO>> getAllOrders() {
         /*
          Controller endpoint to fetch all orders in the system.
