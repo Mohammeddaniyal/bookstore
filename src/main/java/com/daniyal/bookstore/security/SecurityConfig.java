@@ -2,6 +2,7 @@ package com.daniyal.bookstore.security;
 
 import com.daniyal.bookstore.security.handlers.CustomAccessDeniedHandler;
 import com.daniyal.bookstore.security.handlers.CustomAuthenticationEntryPoint;
+import com.daniyal.bookstore.security.handlers.SecurityExceptionHandlerFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +39,10 @@ public class SecurityConfig {
         // Pass handlerExceptionResolver into JwtAuthFilter constructor
         return new JwtAuthFilter(handlerExceptionResolver);
     }
-
+    @Bean
+    public SecurityExceptionHandlerFilter securityExceptionHandlerFilter() {
+        return new SecurityExceptionHandlerFilter();
+    }
 
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
