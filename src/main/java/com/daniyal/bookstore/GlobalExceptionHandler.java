@@ -21,6 +21,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -263,6 +264,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleNoHandlerFound(NoHandlerFoundException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .errorCode("URL_NOT_FOUND")
+                .message("The requested URL does not exist")
+                .errors(Collections.emptyMap())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
 
 //        @ExceptionHandler(Exception.class)
 //        public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex) {

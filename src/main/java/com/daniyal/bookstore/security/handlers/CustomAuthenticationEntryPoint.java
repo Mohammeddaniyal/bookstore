@@ -30,7 +30,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         String message = "Authentication is required";
 
         Throwable cause = authException.getCause();
-
         // Check for JWT-specific exceptions and set error code/message accordingly
         if (cause != null) {
             String causeClassName = cause.getClass().getSimpleName();
