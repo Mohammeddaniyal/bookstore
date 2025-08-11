@@ -112,16 +112,20 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponseDTO getOrderById(Long orderId, String email, boolean isAdmin) {
-        Order order= orderRepository.findById(orderId)
-                .orElseThrow(()->(new OrderNotFoundException("Order not found")));
+        // Optimized query: fetches Order by ID along with its OrderItems and related Books in one SQL statement
+        // Prevents N+1 query problem and ensures all details needed for the response DTO are loaded eagerly
 
+        Order order= orderRepository.findByIdWithItemsAndBooks(orderId)
+                .orElseThrow(()->(new OrderNotFoundException("Order not found")));
+        // Ownership check — hide existence from non-owner by returning 404
         if(!isAdmin && !order.getUser().getEmail().equals(email))
         {
             // Security decision: For non-admin users, treat orders they don’t own as "not found" (404)
             // to prevent leaking the existence of other users’ orders.
             throw new OrderNotFoundException("Order not found");
         }
-
+        // At this point Order, OrderItems, and Books will be lazily loaded
+        // but are safe to access inside @Transactional in toOrderResponseDTO
         return toOrderResponseDTO(order);
     }
 
