@@ -149,6 +149,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public List<OrderResponseDTO> listAllOrders() {
         return orderRepository.findAllWithItemsAndBooks().stream()
                 .map(this::toOrderResponseDTO)
@@ -156,13 +157,32 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void cancelOrder(Long orderId, String username, boolean isAdmin) {
+    @Transactional
+    public void cancelOrder(Long orderId, String email, boolean isAdmin) {
+        Order order=orderRepository.findByIdWithItemsAndBooks(orderId)
+            .orElseThrow(()->(new OrderNotFoundException("Order not found with id "+orderId)));
+        if(!isAdmin && !order.getUser().getEmail().equals(email))
+        {
+              throw new OrderNotFoundException("Order not found with id "+orderId);
+        }
+        if(order.getStatus()!=OrderStatus.PENDING)
+        {
+             throw new OrderCancellationException("Only pending orders can be cancelled");
+        }
+        order.setStatus(OrderStatus.CANCELLED);
 
+        // restore stock
+        order.getOrderItems().forEach(orderItem->{
+            Book book=orderItem.getBook();
+            book.setQuantity(book.getQuantity()+orderItem.getQuantity());
+        });
     }
 
     @Override
-    public void updateOrderStatus(Long orderId, OrderStatus status) {
-
+    public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
+        Order order=orderRepository.findByIdWithItemsAndBooks(orderId)
+                .orElseThrow(()->(new OrderNotFoundException("Order not found with id "+orderId)));
+        order.setStatus(newStatus);
     }
 
     private OrderResponseDTO toOrderResponseDTO(Order order)
