@@ -70,7 +70,7 @@ public class OrderController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<OrderResponseDTO>> getAllOrders() {
         /*
          Controller endpoint to fetch all orders in the system.
