@@ -80,6 +80,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users/register", "/api/users/login").permitAll()
                         .requestMatchers("/api/books/**","/api/authors/**").hasRole("ADMIN")
                         .requestMatchers("/api/orders/**").hasAnyRole("ADMIN", "CUSTOMER")
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
