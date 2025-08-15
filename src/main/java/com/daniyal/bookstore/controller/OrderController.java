@@ -87,14 +87,36 @@ public class OrderController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Page<OrderResponseDTO>> getAllOrders(
             @RequestParam(defaultValue="0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy)
     {
         Pageable pageable= PageRequest.of(page,size, Sort.by(sortBy));
-        Page<OrderResponseDTO> orders=orderService.getAllBooks(pageable);
+        Page<OrderResponseDTO> orders=orderService.listAllOrders(pageable);
         return ResponseEntity.ok(orders);
+    }
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<OrderResponseDTO>> getOrders(
+            @RequestParam(required = false) OrderStatus status,
+            @RequestParam(required = false) String email,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                sortDir.equalsIgnoreCase("ASC") ?
+                        Sort.by(sortBy).ascending() :
+                        Sort.by(sortBy).descending()
+        );
+
+        Page<OrderResponseDTO> result = orderService.filterOrders(status, email, pageable);
+        return ResponseEntity.ok(result);
     }
 
 
