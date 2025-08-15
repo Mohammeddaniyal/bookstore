@@ -1,6 +1,10 @@
 package com.daniyal.bookstore.repository;
 
 import com.daniyal.bookstore.entity.Order;
+import com.daniyal.bookstore.enums.OrderStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,4 +31,17 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
             "ORDER BY o.createdAt DESC")
    List<Order> findAllWithItemsAndBooks();
 
+    @EntityGraph(attributePaths = {"orderItems","orderItems.book"})
+    Page<Order> findAll(Pageable pageable);
+
+    @EntityGraph(attributePaths = {"orderItems", "orderItems.book", "user"})
+    @Query(value = """
+        SELECT o FROM Order o
+        WHERE (:status IS NULL OR o.status = :status)
+          AND (:email IS NULL OR LOWER(o.user.email) LIKE LOWER(CONCAT('%', :email, '%')))
+        """)
+    Page<Order> findByStatusAndUserEmail(
+            @Param("status") OrderStatus status,
+            @Param("email") String email,
+            Pageable pageable);
 }
