@@ -9,7 +9,6 @@ import com.daniyal.bookstore.exceptions.*;
 import com.daniyal.bookstore.repository.AuthorRepository;
 import com.daniyal.bookstore.repository.BookRepository;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -164,6 +163,17 @@ public class BookServiceImpl implements BookService{
                         .genre(book.getGenre())
                         .imageUrl(book.getImageUrl())
                         .build());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<BookResponseDTO> searchBooks(String title, String author, String genre, Pageable pageable) {
+        String t = (title == null || title.isBlank()) ? null : title.trim();
+        String a = (author == null || author.isBlank()) ? null : author.trim();
+        String g = (genre == null || genre.isBlank()) ? null : genre.trim();
+
+        return bookRepository.searchBooksMultiAuthor(t, a, g, pageable)
+                .map(this::toBookResponseDTO);
     }
 
     @Override
@@ -348,4 +358,24 @@ public class BookServiceImpl implements BookService{
         }
         bookRepository.deleteById(id);
     }
+
+    private BookResponseDTO toBookResponseDTO(Book book)
+    {
+        return BookResponseDTO.builder()
+            .id(book.getId())
+            .authors(
+                    book.getAuthors().stream()
+                            .map(Author::getName)
+                            .collect((Collectors.toSet()))
+            )
+            .title(book.getTitle())
+            .description(book.getDescription())
+            .price(book.getPrice())
+            .quantity(book.getQuantity())
+            .isbn(book.getIsbn())
+            .genre(book.getGenre())
+            .imageUrl(book.getImageUrl())
+            .build();
+    }
+
 }
