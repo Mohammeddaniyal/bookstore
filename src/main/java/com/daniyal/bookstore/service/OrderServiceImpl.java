@@ -1,20 +1,16 @@
 package com.daniyal.bookstore.service;
 
-import com.daniyal.bookstore.dto.OrderItemRequestDTO;
-import com.daniyal.bookstore.dto.OrderItemResponseDTO;
-import com.daniyal.bookstore.dto.OrderRequestDTO;
-import com.daniyal.bookstore.dto.OrderResponseDTO;
-import com.daniyal.bookstore.entity.Book;
-import com.daniyal.bookstore.entity.Order;
-import com.daniyal.bookstore.entity.OrderItem;
-import com.daniyal.bookstore.entity.User;
+import com.daniyal.bookstore.dto.*;
+import com.daniyal.bookstore.entity.*;
 import com.daniyal.bookstore.enums.OrderStatus;
 import com.daniyal.bookstore.exceptions.*;
 import com.daniyal.bookstore.repository.BookRepository;
 import com.daniyal.bookstore.repository.OrderRepository;
 import com.daniyal.bookstore.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -154,6 +150,24 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAllWithItemsAndBooks().stream()
                 .map(this::toOrderResponseDTO)
                 .toList();
+    }
+
+    @Transactional
+    @Override
+    public Page<OrderResponseDTO> listAllOrders(Pageable pageable)
+    {
+        return orderRepository.findAll(pageable)
+                .map(this::toOrderResponseDTO);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<OrderResponseDTO> filterOrders(
+            OrderStatus status, String email, Pageable pageable) {
+        String em = (email == null || email.isBlank()) ? null : email.trim();
+
+        return orderRepository.findByStatusAndUserEmail(status, em, pageable)
+                .map(this::toOrderResponseDTO);
     }
 
     @Override
