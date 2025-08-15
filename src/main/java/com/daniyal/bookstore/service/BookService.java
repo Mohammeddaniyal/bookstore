@@ -5,6 +5,7 @@ import com.daniyal.bookstore.dto.BookResponseDTO;
 import com.daniyal.bookstore.dto.BookUpdateDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,6 +15,10 @@ public interface BookService {
     List<BookResponseDTO> getAllBooks();
     Page<BookResponseDTO> getAllBooks(Pageable pageable);
     BookResponseDTO partialUpdateBook(Long id, BookUpdateDTO bookRequest);
-    BookResponseDTO fullUpdateBook(Long id,BookRequestDTO bookRequest);
+
+    @Transactional(readOnly = true)
+    Page<BookResponseDTO> searchBooks(String title, String author, String genre, Pageable pageable);
+
+    BookResponseDTO fullUpdateBook(Long id, BookRequestDTO bookRequest);
     void deleteBook(Long id);
 }
