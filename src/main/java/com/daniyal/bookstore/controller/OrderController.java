@@ -1,11 +1,16 @@
 package com.daniyal.bookstore.controller;
 
+import com.daniyal.bookstore.dto.BookResponseDTO;
 import com.daniyal.bookstore.dto.OrderRequestDTO;
 import com.daniyal.bookstore.dto.OrderResponseDTO;
 import com.daniyal.bookstore.enums.OrderStatus;
 import com.daniyal.bookstore.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -69,7 +74,7 @@ public class OrderController {
 
     }
 
-    @GetMapping
+    @GetMapping("/getAll")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<OrderResponseDTO>> getAllOrders() {
         /*
@@ -80,6 +85,18 @@ public class OrderController {
          */
         return ResponseEntity.ok(orderService.listAllOrders());
     }
+
+    @GetMapping
+    public ResponseEntity<Page<OrderResponseDTO>> getAllOrders(
+            @RequestParam(defaultValue="0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy)
+    {
+        Pageable pageable= PageRequest.of(page,size, Sort.by(sortBy));
+        Page<OrderResponseDTO> orders=orderService.getAllBooks(pageable);
+        return ResponseEntity.ok(orders);
+    }
+
 
     @PostMapping("/{orderId}/cancel")
     public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId, Authentication authentication) {
