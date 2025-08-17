@@ -1,6 +1,7 @@
 package com.daniyal.bookstore.entity;
 
 import com.daniyal.bookstore.enums.OrderStatus;
+import com.daniyal.bookstore.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,7 +32,11 @@ public class Order {
     @JoinColumn(name="user_id")
     private User user;
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private OrderStatus orderStatus;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
+
     @OneToMany(mappedBy = "order",cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<OrderItem> orderItems=new ArrayList<>();
