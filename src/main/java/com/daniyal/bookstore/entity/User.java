@@ -14,7 +14,12 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "users",
+        indexes = {
+            @Index(name = "idx_user_email", columnList = "email"),
+            @Index(name="idx_user_username", columnList = "username")
+        }
+)
 public class User {
 
     @Id
