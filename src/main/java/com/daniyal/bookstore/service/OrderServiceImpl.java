@@ -3,6 +3,7 @@ package com.daniyal.bookstore.service;
 import com.daniyal.bookstore.dto.*;
 import com.daniyal.bookstore.entity.*;
 import com.daniyal.bookstore.enums.OrderStatus;
+import com.daniyal.bookstore.enums.PaymentStatus;
 import com.daniyal.bookstore.exceptions.*;
 import com.daniyal.bookstore.repository.BookRepository;
 import com.daniyal.bookstore.repository.OrderRepository;
@@ -59,40 +60,51 @@ public class OrderServiceImpl implements OrderService {
         Map<Long,Book> bookMap=books.stream()
                 .collect(Collectors.toMap(Book::getId, Function.identity()));
 
+        // Group orderItems by bookId and sum quantities
+        Map<Long, Integer> combinedOrderItems = orderRequest.getOrderItems().stream()
+                .collect(Collectors.groupingBy(
+                        OrderItemRequestDTO::getBookId,
+                        Collectors.summingInt(OrderItemRequestDTO::getQuantity)
+                ));
+
         // prepare OrderItem, validate each book and quantity
         List<OrderItem> orderItems=new ArrayList<>();
         BigDecimal totalAmount=BigDecimal.ZERO;
         List<OrderItemRequestDTO> requestOrderItems=orderRequest.getOrderItems();
-        for(OrderItemRequestDTO requestOrderItem:requestOrderItems)
+        for(Map.Entry<Long, Integer> entry : combinedOrderItems.entrySet())
         {
+            Long bookId = entry.getKey();
+            int totalQuantity = entry.getValue();
 
-            Book book=bookMap.get(requestOrderItem.getBookId());
-            if(book==null) {
-                throw new BookNotFoundException("Book not found with id " + requestOrderItem.getBookId());
+            Book book = bookMap.get(bookId);
+            if (book == null) {
+                throw new BookNotFoundException("Book not found with id " + bookId);
             }
-            if(book.getQuantity()<requestOrderItem.getQuantity())
-            {
-                throw new OrderOutOfStockException("Not enough stock for book : "+book.getTitle());
+            if (book.getQuantity() < totalQuantity) {
+                throw new OrderOutOfStockException("Not enough stock for book : " + book.getTitle());
             }
 
-            book.setQuantity(book.getQuantity()-requestOrderItem.getQuantity());
+            book.setQuantity(book.getQuantity() - totalQuantity);
 
-            BigDecimal itemSubTotal=book.getPrice().multiply(BigDecimal.valueOf(requestOrderItem.getQuantity()));
+            BigDecimal itemSubTotal = book.getPrice().multiply(BigDecimal.valueOf(totalQuantity));
 
-            OrderItem orderItem=OrderItem.builder()
+            OrderItem orderItem = OrderItem.builder()
                     .book(book)
-                    .quantity(requestOrderItem.getQuantity())
+                    .quantity(totalQuantity)
                     .subTotal(itemSubTotal)
                     .build();
+
             orderItems.add(orderItem);
-            totalAmount=totalAmount.add(itemSubTotal);
+            totalAmount = totalAmount.add(itemSubTotal);
+
         }
 
         // create OrderEntity link item & user
         Order order=Order.builder()
                 .user(user)
                 .orderItems(orderItems)
-                .status(OrderStatus.PENDING)
+                .orderStatus(OrderStatus.PENDING)
+                .paymentStatus(PaymentStatus.UNPAID)
                 .totalAmount(totalAmount)
                 .build();
         orderItems.forEach(item->item.setOrder(order));
@@ -163,10 +175,10 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     @Override
     public Page<OrderResponseDTO> filterOrders(
-            OrderStatus status, String email, Pageable pageable) {
+            OrderStatus orderStatus, PaymentStatus paymentStatus, String email, Pageable pageable) {
         String em = (email == null || email.isBlank()) ? null : email.trim();
 
-        return orderRepository.findByStatusAndUserEmail(status, em, pageable)
+        return orderRepository.findByOrderStatusAndPaymentStatusAndUserEmail(orderStatus, paymentStatus, em, pageable)
                 .map(this::toOrderResponseDTO);
     }
 
@@ -179,11 +191,16 @@ public class OrderServiceImpl implements OrderService {
         {
               throw new OrderNotFoundException("Order not found with id "+orderId);
         }
-        if(order.getStatus()!=OrderStatus.PENDING)
+        if(order.getOrderStatus()!=OrderStatus.PENDING)
         {
              throw new OrderCancellationException("Only pending orders can be cancelled");
         }
-        order.setStatus(OrderStatus.CANCELLED);
+
+        if(order.getPaymentStatus()==PaymentStatus.PAID)
+        {
+            order.setPaymentStatus(PaymentStatus.REFUNDED);
+        }
+        order.setOrderStatus(OrderStatus.CANCELLED);
 
         // restore stock
         order.getOrderItems().forEach(orderItem->{
@@ -196,7 +213,7 @@ public class OrderServiceImpl implements OrderService {
     public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
         Order order=orderRepository.findByIdWithItemsAndBooks(orderId)
                 .orElseThrow(()->(new OrderNotFoundException("Order not found with id "+orderId)));
-        order.setStatus(newStatus);
+        order.setOrderStatus(newStatus);
     }
 
     private OrderResponseDTO toOrderResponseDTO(Order order)
@@ -214,7 +231,8 @@ public class OrderServiceImpl implements OrderService {
         return OrderResponseDTO.builder()
                 .id(order.getId())
                 .orderItems(orderItems)
-                .status(order.getStatus())
+                .orderStatus(order.getOrderStatus())
+                .paymentStatus(order.getPaymentStatus())
                 .totalAmount(order.getTotalAmount())
                 .createdAt(order.getCreatedAt() != null
                         ? DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(order.getCreatedAt())
