@@ -3,9 +3,10 @@ package com.daniyal.bookstore.service;
 import com.daniyal.bookstore.dto.OrderRequestDTO;
 import com.daniyal.bookstore.dto.OrderResponseDTO;
 import com.daniyal.bookstore.enums.OrderStatus;
-import jakarta.transaction.Transactional;
+import com.daniyal.bookstore.enums.PaymentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 
 import java.util.List;
 
@@ -17,9 +18,8 @@ public interface OrderService {
 
     Page<OrderResponseDTO> listAllOrders(Pageable pageable);
 
-
     Page<OrderResponseDTO> filterOrders(
-            OrderStatus status, String email, Pageable pageable);
+            OrderStatus orderStatus, PaymentStatus paymentStatus, String email, Pageable pageable);
 
     void cancelOrder(Long orderId, String email, boolean isAdmin);
     void updateOrderStatus(Long orderId, OrderStatus status);
