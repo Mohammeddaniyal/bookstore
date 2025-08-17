@@ -11,7 +11,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="order_items")
+@Table(name="order_items",
+        indexes = {
+            @Index(name="idx_order_item_order", columnList = "order_id"),
+            @Index(name="idx_order_item_book", columnList = "book_id")
+        }
+)
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
