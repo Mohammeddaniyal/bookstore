@@ -4,6 +4,7 @@ import com.daniyal.bookstore.dto.BookResponseDTO;
 import com.daniyal.bookstore.dto.OrderRequestDTO;
 import com.daniyal.bookstore.dto.OrderResponseDTO;
 import com.daniyal.bookstore.enums.OrderStatus;
+import com.daniyal.bookstore.enums.PaymentStatus;
 import com.daniyal.bookstore.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +101,8 @@ public class OrderController {
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<OrderResponseDTO>> getOrders(
-            @RequestParam(required = false) OrderStatus status,
+            @RequestParam(required = false) OrderStatus orderStatus,
+            @RequestParam(required = false) PaymentStatus paymentStatus,
             @RequestParam(required = false) String email,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -115,7 +117,7 @@ public class OrderController {
                         Sort.by(sortBy).descending()
         );
 
-        Page<OrderResponseDTO> result = orderService.filterOrders(status, email, pageable);
+        Page<OrderResponseDTO> result = orderService.filterOrders(orderStatus,paymentStatus, email, pageable);
         return ResponseEntity.ok(result);
     }
 
