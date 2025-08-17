@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -17,7 +18,8 @@ import java.util.Set;
 public class JwtUtil {
 
 
-
+    @Value("${jwt.secret}")
+    private String secretKey;
     private Key key;
     private final long JWT_EXPIRATION = 1000 * 60 * 60 * 10; // 10 hour
 
@@ -25,7 +27,7 @@ public class JwtUtil {
     public void init() {
         // Generate a secure random key. In production, use a fixed secret key loaded securely!
         // In production, load a secret from a config file or environment variable!
-        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        this.key = Keys.hmacShaKeyFor(java.util.Base64.getDecoder().decode(secretKey));
     }
 
     // Generate token including email & roles in claims
