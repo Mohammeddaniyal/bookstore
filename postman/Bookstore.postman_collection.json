@@ -1,0 +1,829 @@
+{
+	"info": {
+		"_postman_id": "3c6ac3fa-3d8b-4147-b7da-18c1ae6fa05a",
+		"name": "Bookstore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45276059",
+		"_collection_link": "https://mohammeddaniyal.postman.co/workspace/Mohammed-Daniyal's-Workspace~db0967b0-c642-4501-8eea-e705e617fb7c/collection/45276059-3c6ac3fa-3d8b-4147-b7da-18c1ae6fa05a?action=share&source=collection_link&creator=45276059"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "get user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU0ODQyMTQ3LCJleHAiOjE3NTQ4NzgxNDd9.Ke1HGZbiKb8tGVbKoakiY0uLkiVowJfGjBRPpp0LQlM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/users/daniyal",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users",
+								"daniyal"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "30216815-dfd0-4f61-9a6b-6330f68ae2bf",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"hasnain\",\r\n    \"password\": \"hasnain\",\r\n    \"email\": \"hasnain@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/users/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"daniyal\",\r\n    \"email\": \"daniyal@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/users/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Book",
+			"item": [
+				{
+					"name": "add-book",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU0NjYyNzgxLCJleHAiOjE3NTQ2OTg3ODF9.KxiF2-iooR5uvAm5pybZb7SizB3WoIZiKP7s6T-x2R0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Clean Code\",\r\n  \"authorIds\": [1, 2],\r\n  \"genre\": \"Programming\",\r\n  \"isbn\": \"978-0132350884\",\r\n  \"description\": \"A handbook of agile software craftsmanship.\",\r\n  \"price\": 45.99,\r\n  \"quantity\": 10,\r\n  \"imageUrl\": \"http://example.com/cleancode.jpg\",\r\n  // Missing quotation mark below (syntax error)\r\n  \"extraField\": \"Test\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/books",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "partial-update-book",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU0NjU5ODAyLCJleHAiOjE3NTQ2OTU4MDJ9.f_xOdC7IgG9wmVc1fFTjRqxj72xP9fGfN5Q5M3kbB80",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/books/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"books",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-book",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU1NDI0MTkwLCJleHAiOjE3NTU0NjAxOTB9.rq9dCRQklWCCPF8ZJNqefRezu3uLjdUv39K6KZ6VB60",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/books/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"books",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-book",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU0NjU5ODAyLCJleHAiOjE3NTQ2OTU4MDJ9.f_xOdC7IgG9wmVc1fFTjRqxj72xP9fGfN5Q5M3kbB80",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/books/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"books",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-book",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU0NjU5MDYxLCJleHAiOjE3NTQ2OTUwNjF9.J7wmAgx0FjULTnCutYlqJg2GR_ssIKanxAP6bIKqTLk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Building Microservices\",\r\n  \"authorIds\": [4,5],\r\n  \"genre\": \"Programming\",\r\n  \"isbn\": \"978-0137081073\",\r\n  \"description\": \"Updated handbook of agile software craftsmanship.\",\r\n  \"price\": 49.99,\r\n  \"quantity\": 15,\r\n  \"imageUrl\": \"http://example.com/cleancode_updated.jpg\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/books/17",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"books",
+								"17"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiJdLCJzdWIiOiJhemthMjAxMkBnbWFpbC5jb20iLCJpYXQiOjE3NTQ5MTM5OTksImV4cCI6MTc1NDk0OTk5OX0.QLtyRARzPQwL5pzTmqH43YoSVHr6yBiNopuinG6_cQs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/books/all",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"books",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-pageable",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU0NjY1MzUwLCJleHAiOjE3NTQ3MDEzNTB9.WaXAGJJ9fw5K-yUweDDSeOZHRpta6044NMeh8vgpfsk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/books?page=-1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"books"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "-1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-book",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU1NDI0MTkwLCJleHAiOjE3NTU0NjAxOTB9.rq9dCRQklWCCPF8ZJNqefRezu3uLjdUv39K6KZ6VB60",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/books/search?title=Building Microservices",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"books",
+								"search"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "Building Microservices"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6Im1vaGFtbWVkZGFuaXlhbEBnbWFpbC5jb20iLCJpYXQiOjE3NTQ0MTYzNTYsImV4cCI6MTc1NDQ1MjM1Nn0.8URiN8597N2WK4lxuRVIbbAJWr1UQlcG95EtNwXzC4E",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Author",
+			"item": [
+				{
+					"name": "add-author",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiJdLCJzdWIiOiJhemthMjAxMkBnbWFpbC5jb20iLCJpYXQiOjE3NTQ2NDEwNzcsImV4cCI6MTc1NDY3NzA3N30.t-G3Gcki95YmAHpKXm94kUhgL2RptkBkCUiklGSBxac",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Eric Evans\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/authors",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"authors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU0NjQwOTQyLCJleHAiOjE3NTQ2NzY5NDJ9.aTyAZj4WFkApPRKfZWqtPq5Ey1PFWfM-R23GxAqZHRE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/authors",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"authors"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order",
+			"item": [
+				{
+					"name": "place-order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiJdLCJzdWIiOiJhemthMjAxMkBnbWFpbC5jb20iLCJpYXQiOjE3NTU0MjkyMTcsImV4cCI6MTc1NTQ2NTIxN30.kpoWpjGg5SSXVPXjWz6qzE5W3I8rhxlouQ0ff2pHtck",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"orderItems\": [\r\n    {\"bookId\": -1, \"quantity\": 1},\r\n    {\"bookId\": 14, \"quantity\": 4}\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-order-by-id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU1NDI0MTkwLCJleHAiOjE3NTU0NjAxOTB9.rq9dCRQklWCCPF8ZJNqefRezu3uLjdUv39K6KZ6VB60",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/orders/10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-my",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU0OTAyMjYwLCJleHAiOjE3NTQ5MzgyNjB9.zuHt78801Cr27Ukz2J8YHAePUmFDMiA3HHHsAHtLLmI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/orders/my",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders",
+								"my"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-any-user-only-admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU0OTAzMDkwLCJleHAiOjE3NTQ5MzkwOTB9.K2nctf0NaMZfcxjq5V_1OptG0vk91K1I_GWVRv7ykjc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/orders/user?email=hasnain@gmail.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders",
+								"user"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "hasnain@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-admin-only",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiJdLCJzdWIiOiJhemthMjAxMkBnbWFpbC5jb20iLCJpYXQiOjE3NTQ5MDM2NjAsImV4cCI6MTc1NDkzOTY2MH0.goMl0XCC-C87m5R9QTblQDTFax427ZRK1mW-QNQj6qM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cancel-order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU0OTA0MjcwLCJleHAiOjE3NTQ5NDAyNzB9.xR36bbTpGFcQZaWyJZwPRPc68adjoh6cDZF097OhLeY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"orderItems\": [\r\n    { \"bookId\": 20, \"quantity\": 1 },\r\n    { \"bookId\": 22, \"quantity\": 2 }\r\n  ]\r\n}\r\n"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/orders/8/cancel",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders",
+								"8",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiIsIkFETUlOIl0sInN1YiI6ImRhbml5YWxAZ21haWwuY29tIiwiaWF0IjoxNzU1NDI0MTkwLCJleHAiOjE3NTU0NjAxOTB9.rq9dCRQklWCCPF8ZJNqefRezu3uLjdUv39K6KZ6VB60",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/orders/1/status?status=DELIVERED",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders",
+								"1",
+								"status"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "DELIVERED"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-orders-pageable-admin-only",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "search",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment",
+			"item": [
+				{
+					"name": "pay",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJDVVNUT01FUiJdLCJzdWIiOiJhemthMjAxMkBnbWFpbC5jb20iLCJpYXQiOjE3NTU0MjkyMTcsImV4cCI6MTc1NTQ2NTIxN30.kpoWpjGg5SSXVPXjWz6qzE5W3I8rhxlouQ0ff2pHtck",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\":1,\r\n    \"amount\":39.99\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/payment/pay",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"payment",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
