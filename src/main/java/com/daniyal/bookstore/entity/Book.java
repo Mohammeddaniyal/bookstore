@@ -16,7 +16,14 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="books")
+@Table(name="books",
+        indexes = {
+            @Index(name="idx_book_title", columnList = "title"),
+            @Index(name="idx_book_genre", columnList = "genre"),
+            @Index(name="idx_book_isbn", columnList = "isbn")
+
+        }
+)
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
