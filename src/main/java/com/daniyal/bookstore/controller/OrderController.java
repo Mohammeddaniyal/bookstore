@@ -1,11 +1,17 @@
 package com.daniyal.bookstore.controller;
 
-import com.daniyal.bookstore.dto.BookResponseDTO;
 import com.daniyal.bookstore.dto.OrderRequestDTO;
 import com.daniyal.bookstore.dto.OrderResponseDTO;
 import com.daniyal.bookstore.enums.OrderStatus;
 import com.daniyal.bookstore.enums.PaymentStatus;
+import com.daniyal.bookstore.exceptions.ApiErrorResponse;
 import com.daniyal.bookstore.service.OrderService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,8 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.http.ResponseEntity.ok;
-
+@Tag(name = "Order", description = "APIs for order management including placing, updating, and retrieving orders")
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
@@ -29,6 +34,26 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @Operation(summary = "Place a new order",
+            description = "Creates an order for the authenticated user with given order items.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Order successfully created",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = OrderResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Validation error or out-of-stock",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "One or more books not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class)))
+            })
     @PostMapping
     public ResponseEntity<OrderResponseDTO> placeOrder(@Valid @RequestBody OrderRequestDTO orderRequestDTO, Authentication authentication) {
         // get username from authentication
@@ -37,6 +62,22 @@ public class OrderController {
         return new ResponseEntity<>(orderService.placeOrder(orderRequestDTO, email), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Get order by ID",
+            description = "Retrieve details of an order by its ID. Non-admins can access only their own orders.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Order found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = OrderResponseDTO.class))),
+            @ApiResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Order not found or access denied",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> getOrderById(@PathVariable Long id, Authentication authentication) {
         String email = authentication.getName();
@@ -46,6 +87,17 @@ public class OrderController {
         return new ResponseEntity<>(orderService.getOrderById(id, email, isAdmin), HttpStatus.FOUND);
     }
 
+    @Operation(summary = "Get all orders of the logged-in user",
+            description = "Fetches all orders placed by the currently authenticated user.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "List of user's orders retrieved",
+                    content = @Content(
+                            mediaType = "application/json")),
+            @ApiResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
     @GetMapping("/my")
     public ResponseEntity<List<OrderResponseDTO>> getAllMyOrders(Authentication authentication) {
         /*
@@ -59,6 +111,21 @@ public class OrderController {
         return ResponseEntity.ok(orderService.listOrdersForUser(email, email, false));
     }
 
+    @Operation(summary = "Get all orders for a specific user (ADMIN only)",
+            description = "Admins can query orders for any user by email.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Orders retrieved for specified user",
+                    content = @Content(
+                            mediaType = "application/json")),
+            @ApiResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Admin access required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
     @GetMapping("/user")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<OrderResponseDTO>> getOrderForUser(@RequestParam String email, Authentication authentication) {
@@ -75,6 +142,21 @@ public class OrderController {
 
     }
 
+    @Operation(summary = "Get all orders in the system (ADMIN only)",
+            description = "Admins can retrieve all orders with details.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "All orders retrieved",
+                    content = @Content(
+                            mediaType = "application/json")),
+            @ApiResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Admin access required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
     @GetMapping("/getAll")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<OrderResponseDTO>> getAllOrders() {
@@ -87,6 +169,27 @@ public class OrderController {
         return ResponseEntity.ok(orderService.listAllOrders());
     }
 
+
+
+    @Operation(summary = "Get paginated orders (ADMIN only)",
+            description = "Retrieve paginated list of orders with sorting.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Paginated orders retrieved",
+                    content = @Content(
+                            mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Invalid pagination parameters",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Admin access required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
     @GetMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Page<OrderResponseDTO>> getAllOrders(
@@ -98,16 +201,38 @@ public class OrderController {
         Page<OrderResponseDTO> orders=orderService.listAllOrders(pageable);
         return ResponseEntity.ok(orders);
     }
+
+
+    @Operation(summary = "Search orders with filters (ADMIN only)",
+            description = "Search orders by status, payment status, and user email with pagination and sorting.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Filtered orders retrieved",
+                    content = @Content(
+                            mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Invalid filter parameters",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Admin access required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<OrderResponseDTO>> getOrders(
+    public ResponseEntity<Page<OrderResponseDTO>> getAllOrdersByAppliedFilters(
             @RequestParam(required = false) OrderStatus orderStatus,
             @RequestParam(required = false) PaymentStatus paymentStatus,
             @RequestParam(required = false) String email,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "DESC") String sortDir) {
+            @RequestParam(defaultValue = "DESC") String sortDir)
+    {
 
         Pageable pageable = PageRequest.of(
                 page,
@@ -121,9 +246,26 @@ public class OrderController {
         return ResponseEntity.ok(result);
     }
 
-
+    @Operation(summary = "Cancel an order",
+            description = "Cancel a pending order. Users can only cancel their own pending orders; admins can cancel any.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Order successfully cancelled"),
+            @ApiResponse(responseCode = "400", description = "Order cannot be cancelled",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Order not found or access denied",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
     @PostMapping("/{orderId}/cancel")
-    public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId, Authentication authentication) {
+    public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId, Authentication authentication)
+    {
         // Any user can cancel their own pending orders; admin can cancel any
         /*
          Cancels an order by ID.
@@ -139,6 +281,27 @@ public class OrderController {
         return ResponseEntity.noContent().build(); // 204 No Content
     }
 
+    @Operation(summary = "Update status of an order (ADMIN only)",
+            description = "Admins can update the order status, e.g., from PENDING to SHIPPED.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Order status updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid status or order state",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Admin access required",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Order not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
     @PatchMapping("/{orderId}/status")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     // ADMIN-only: update status of any order
