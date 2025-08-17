@@ -13,7 +13,11 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name="authors")
+@Table(name="authors",
+        indexes = {
+            @Index(name="idx_author_name", columnList = "name")
+        }
+)
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
