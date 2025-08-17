@@ -19,7 +19,7 @@ import java.util.List;
         indexes ={
             @Index(name="idx_order_user", columnList = "user_id"),
             @Index(name="idx_order_status", columnList = "status"),
-            @Index(name="idx_order_createdAt", columnList = "createdAt")
+            @Index(name="idx_order_createdAt", columnList = "created_at")
         }
 )
 public class Order {
